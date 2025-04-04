@@ -3,7 +3,17 @@ import "~/styles/globals.css";
 import { type Metadata } from "next";
 import { Geist } from "next/font/google";
 
+import {
+  ClerkProvider,
+  SignInButton,
+  SignUpButton,
+  SignedIn,
+  SignedOut,
+  UserButton,
+} from '@clerk/nextjs'
+
 import { TRPCReactProvider } from "~/trpc/react";
+import TopNav from "./_components/topnav";
 
 export const metadata: Metadata = {
   title: "Create T3 App",
@@ -20,10 +30,13 @@ export default function RootLayout({
   children,
 }: Readonly<{ children: React.ReactNode }>) {
   return (
+    <ClerkProvider>
     <html lang="en" className={`${geist.variable}`}>
       <body>
+        <TopNav />
         <TRPCReactProvider>{children}</TRPCReactProvider>
       </body>
     </html>
+    </ClerkProvider>
   );
 }
