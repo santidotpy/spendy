@@ -1,3 +1,0 @@
-# Spendy
-
-### Proximamente documentación.
