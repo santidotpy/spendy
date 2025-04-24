@@ -15,7 +15,7 @@ const TransactionSchema = z.array(
       message: "El monto debe ser negativo",
     }),
     currency: z.enum(["ARS", "USD"]),
-  })
+  }),
 );
 
 export const statementRouter = createTRPCRouter({
@@ -28,22 +28,34 @@ Texto:
 """${input.text}"""
 `;
 
-     const completion = await openai.chat.completions.create({
+      const completion = await openai.chat.completions.create({
         model: "gpt-4o",
         messages: [
-          { role: "system", content: "Sos un extractor de transacciones bancarias." },
+          {
+            role: "system",
+            content:
+              "Sos un extractor de transacciones bancarias. Devolvé solo JSON puro sin explicaciones ni comentarios. No uses bloques de código markdown.",
+          },
           { role: "user", content: prompt },
         ],
         temperature: 0.2,
       });
 
-      if (!completion.choices[0]?.message?.content) {
-        throw new Error("No se pudo obtener una respuesta de OpenAI.");
+      const choice = completion.choices[0];
+      if (!choice?.message?.content) {
+        throw new Error("La respuesta de OpenAI está vacía o malformada.");
       }
-      const response = completion.choices[0].message?.content ?? "";
-      
+
+      const response = choice.message.content;
+      console.log("📦 Respuesta cruda de OpenAI:\n", response);
+
+      const clean = response
+        .trim()
+        .replace(/^```json|^```|```$/g, "")
+        .trim();
+
       try {
-        const parsed = TransactionSchema.parse(JSON.parse(response));
+        const parsed = TransactionSchema.parse(JSON.parse(clean));
         return { transactions: parsed };
       } catch (err) {
         console.error("❌ Error al validar JSON devuelto por GPT:", err);
@@ -52,17 +64,11 @@ Texto:
     }),
 });
 
-
-
-
-
-
 // import { z } from "zod";
 // import { createTRPCRouter, publicProcedure } from "~/server/api/trpc";
 // import { getDocument, GlobalWorkerOptions } from "pdfjs-dist";
 
 // const pdfjs = await import("pdfjs-dist/webpack.mjs")
-
 
 // export const statementRouter = createTRPCRouter({
 //   parsePdf: publicProcedure
@@ -75,14 +81,14 @@ Texto:
 //       const pdf = await pdfjs.getDocument({
 //         data: new Uint8Array(input.fileBuffer),
 //       }).promise;
-  
+
 //       const numPages = pdf.numPages;
 //       let rawTextHolder = "";
-  
+
 //       for (let i = 1; i <= numPages; i++) {
 //         const page = await pdf.getPage(i);
 //         const textContent = await page.getTextContent();
-  
+
 //         const text = textContent.items
 //           .map((item) => {
 //             // Check that item is TextItem (having "str" property) and filter undefineds, nulls, spaces, and empty strings
@@ -92,17 +98,15 @@ Texto:
 //             return null;
 //           })
 //           .join(" ");
-  
+
 //         rawTextHolder += text;
 //       }
-  
+
 //       return rawTextHolder;
 //     }),
-// }); 
+// });
 
 // ==========
-
-
 
 // import { createTRPCRouter, publicProcedure } from "~/server/api/trpc";
 // import { z } from "zod";
