@@ -39,6 +39,8 @@
     "drizzle-orm": "^0.41.0",
     "lucide-react": "^0.503.0",
     "next": "^15.2.3",
+    "openai": "^4.96.0",
+    "pdfjs-dist": "4.10.38",
     "postgres": "^3.4.4",
     "react": "^19.0.0",
     "react-dom": "^19.0.0",

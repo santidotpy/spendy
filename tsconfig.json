@@ -10,6 +10,9 @@
     "isolatedModules": true,
     "verbatimModuleSyntax": true,
 
+    // check
+    "typeRoots": ["./src/types", "./node_modules/@types"],
+
     /* Strictness */
     "strict": true,
     "noUncheckedIndexedAccess": true,

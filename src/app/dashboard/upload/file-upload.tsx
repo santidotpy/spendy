@@ -4,6 +4,9 @@ import { useCallback, useState } from "react";
 import { useDropzone } from "react-dropzone";
 import { Upload, X } from "lucide-react";
 import { Button } from "~/components/ui/button";
+import { api } from "~/trpc/react";
+import { Buffer } from "buffer";
+import { PDFTextExtractor } from "~/app/_components/pdf-extractor";
 
 export function FileUpload() {
   const [file, setFile] = useState<File | null>(null);
@@ -11,7 +14,7 @@ export function FileUpload() {
 
   const onDrop = useCallback((acceptedFiles: File[]) => {
     if (acceptedFiles.length === 0) return;
-    
+
     const uploadedFile = acceptedFiles[0];
     if (!uploadedFile) return;
 
@@ -32,56 +35,59 @@ export function FileUpload() {
     maxFiles: 1,
   });
 
-  const removeFile = () => {
-    setFile(null);
-    setError(null);
-  };
+  // const removeFile = () => {
+  //   setFile(null);
+  //   setError(null);
+  // };
+
+  // const parsePdf = api.statement.parsePdf.useMutation();
+  // const [transactions, setTransactions] = useState<any[] | null>(null);
+  // const [loading, setLoading] = useState(false);
+
+  // const handleParse = async () => {
+  //   if (!file) return;
+
+  //   setLoading(true);
+  //   setError(null);
+  //   setTransactions(null);
+
+  //   try {
+  //     const arrayBuffer = await file.arrayBuffer();
+  //     const base64Pdf = Buffer.from(arrayBuffer).toString("base64");
+
+  //     const result = await parsePdf.mutateAsync({ fileBuffer: arrayBuffer });
+  //     console.log("Parsed transactions:", result);
+  //     // setTransactions(result);
+  //   } catch (err) {
+  //     console.error(err);
+  //     setError("Error processing the PDF. Please try again.");
+  //   } finally {
+  //     setLoading(false);
+  //   }
+  // };
 
   return (
     <div className="w-full">
       <div
         {...getRootProps()}
-        className={`border-2 border-dashed rounded-lg p-8 text-center cursor-pointer transition-colors
-          ${isDragActive ? "border-primary bg-primary/5" : "border-muted-foreground/25"}
-          ${error ? "border-red-500" : ""}`}
+        className={`cursor-pointer rounded-lg border-2 border-dashed p-8 text-center transition-colors ${isDragActive ? "border-primary bg-primary/5" : "border-muted-foreground/25"} ${error ? "border-red-500" : ""}`}
       >
         <input {...getInputProps()} />
-        <Upload className="mx-auto h-12 w-12 text-muted-foreground" />
-        
-        <p className="mt-4 text-sm text-muted-foreground">
-          {isDragActive ? (
-            "Drop your credit card statement here..."
-          ) : (
-            "Drag and drop your credit card statement here, or click to select"
-          )}
+        <Upload className="text-muted-foreground mx-auto h-12 w-12" />
+
+        <p className="text-muted-foreground mt-4 text-sm">
+          {isDragActive
+            ? "Soltá tu resumen aquí..."
+            : "Arrastrá tu resumen de tarjeta acá, o hacé clic para seleccionarlo"}
         </p>
-        <p className="mt-2 text-xs text-muted-foreground">
-          Only PDF files are accepted
+        <p className="text-muted-foreground mt-2 text-xs">
+          Solo se aceptan archivos PDF
         </p>
-        
-        {error && (
-          <p className="mt-2 text-sm text-red-500">{error}</p>
-        )}
+
+        {error && <p className="mt-2 text-sm text-red-500">{error}</p>}
       </div>
 
-      {file && (
-        <div className="mt-4 p-4 bg-muted rounded-lg flex items-center justify-between">
-          <div className="flex items-center space-x-2">
-            <span className="text-sm font-medium">{file.name}</span>
-            <span className="text-xs text-muted-foreground">
-              ({Math.round(file.size / 1024)} KB)
-            </span>
-          </div>
-          <Button
-            variant="ghost"
-            size="sm"
-            onClick={removeFile}
-            className="hover:text-red-500"
-          >
-            <X className="h-4 w-4" />
-          </Button>
-        </div>
-      )}
+      {file && <PDFTextExtractor file={file} />}
     </div>
   );
-} 
+}
