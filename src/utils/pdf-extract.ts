@@ -26,11 +26,20 @@
 
 
 // utils/pdf-extract.ts
-import pdfParse from "pdf-parse";
+// import pdfParse from "pdf-parse";
 import { Buffer } from "buffer";
 
-export async function extractTextFromPdfBase64(base64: string): Promise<string> {
-  const buffer = Buffer.from(base64, "base64");
-  const { text } = await pdfParse(buffer);
-  return text;
+// export async function extractTextFromPdfBase64(base64: string): Promise<string> {
+//   const buffer = Buffer.from(base64, "base64");
+//   const { text } = await pdfParse(buffer);
+//   return text;
+// }
+
+export function formatCurrency(amount: number, withDollarSign = true): string {
+  const formatted = new Intl.NumberFormat('es-AR', {
+    minimumFractionDigits: 2,
+    maximumFractionDigits: 2,
+  }).format(amount);
+
+  return withDollarSign ? `$${formatted}` : formatted;
 }

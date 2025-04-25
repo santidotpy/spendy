@@ -11,10 +11,9 @@ const TransactionSchema = z.array(
   z.object({
     date: z.string().regex(/^\d{4}-\d{2}-\d{2}$/),
     description: z.string(),
-    amount: z.number().refine((val) => val < 0, {
-      message: "El monto debe ser negativo",
-    }),
+    amount: z.number(),
     currency: z.enum(["ARS", "USD"]),
+    category: z.string(),
   }),
 );
 
@@ -22,7 +21,32 @@ export const statementRouter = createTRPCRouter({
   parseText: publicProcedure
     .input(z.object({ text: z.string() }))
     .mutation(async ({ input }) => {
-      const prompt = `${process.env.OPENAI_PROMPT ?? ""}
+      const prompt = `
+      Extraé transacciones del siguiente resumen de tarjeta de crédito. Devolveme **únicamente** un JSON con esta estructura exacta:
+
+[
+  {
+    "date": "YYYY-MM-DD",
+    "description": "Descripción del gasto",
+    "amount": 1234.56,
+    "currency": "ARS",
+    "category": "Categoría del gasto"
+  }
+]
+
+Reglas:
+- No incluyas ningún texto extra, solo el array JSON.
+- El campo "date" debe tener el formato YYYY-MM-DD.
+- Ignora pagos y saldos anteriores.
+- El campo "amount" debe ser un número positivo.
+- La categoría para cada transacción debe ser una de las siguientes:
+  "Comida", "Transporte", "Salud", "Entretenimiento", "Servicios", "Compras", "Viajes", "Mascotas", "Supermercado", "Otros".
+- En caso de no poder determinar la categoría, usá "Otros".
+- El campo "currency" debe ser "ARS" o "USD" según corresponda.
+- No incluyas "comprobante", "IVA", ni ninguna otra clave extra.
+- Si la fecha aparece sin año, asumí el año del resumen (por ejemplo 2025).
+- No uses bloques Markdown como \`\`\`json.
+- Devolvé **solamente** el array, sin envolverlo en objetos.
 
 Texto:
 """${input.text}"""
@@ -49,18 +73,37 @@ Texto:
       const response = choice.message.content;
       console.log("📦 Respuesta cruda de OpenAI:\n", response);
 
-      const clean = response
-        .trim()
-        .replace(/^```json|^```|```$/g, "")
-        .trim();
+      // const clean = response
+      //   .trim()
+      //   .replace(/^```json|^```|```$/g, "")
+      //   .trim();
 
-      try {
-        const parsed = TransactionSchema.parse(JSON.parse(clean));
-        return { transactions: parsed };
-      } catch (err) {
-        console.error("❌ Error al validar JSON devuelto por GPT:", err);
-        throw new Error("OpenAI devolvió un resultado inválido.");
+      let parsedJson: any;
+
+    try {
+      // Intenta parsear directamente
+      parsedJson = JSON.parse(response.trim());
+    } catch {
+      // Si falla, intenta limpiar bloques markdown tipo ```json ... ```
+      const match = response.match(/\[.*\]/s); // captura array completo entre corchetes
+      if (!match) {
+        throw new Error("No se pudo encontrar un JSON válido.");
       }
+
+      parsedJson = JSON.parse(match[0]);
+    }
+
+    const parsed = TransactionSchema.parse(parsedJson);
+    return { transactions: parsed };
+
+
+      // try {
+      //   const parsed = TransactionSchema.parse(JSON.parse(clean));
+      //   return { transactions: parsed };
+      // } catch (err) {
+      //   console.error("❌ Error al validar JSON devuelto por GPT:", err);
+      //   throw new Error("OpenAI devolvió un resultado inválido.");
+      // }
     }),
 });
 

@@ -1,24 +1,27 @@
 "use client";
-import { useEffect, useState } from "react";
+import { useEffect, useState, useRef } from "react";
 import * as PDFJS from "pdfjs-dist/types/src/pdf";
 
 export const usePDFJS = (
   onLoad?: (pdfjs: typeof PDFJS) => Promise<void>,
   deps: (string | number | boolean | undefined | null)[] = [],
 ) => {
-  const [pdfjs, setPDFJS] = useState<typeof PDFJS>();
+  const ourPDF = useRef<typeof PDFJS | null>(null);
 
   // load the library once on mount (the webpack import automatically sets-up the worker)
   useEffect(() => {
-    void import("pdfjs-dist/webpack.mjs").then(setPDFJS);
+    void import("pdfjs-dist/webpack.mjs").then((pdfjs) => {
+      ourPDF.current = pdfjs;
+    });
   }, []);
 
   // execute the callback function whenever PDFJS loads (or a custom dependency-array updates)
   useEffect(() => {
-    if (!pdfjs || !onLoad) return;
-    void (async () => await onLoad(pdfjs))();
+    const pdfJs = ourPDF.current
+    if (!pdfJs || !onLoad) return;
+    void (async () => await onLoad(pdfJs))();
     // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [onLoad, pdfjs, ...deps]);
+  }, [onLoad, ourPDF.current, ...deps]);
 
-  return pdfjs;
+  return ourPDF;
 };
