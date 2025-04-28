@@ -105,37 +105,6 @@ export function FileUpload() {
     maxFiles: 1,
   });
 
-  // const removeFile = () => {
-  //   setFile(null);
-  //   setError(null);
-  // };
-
-  // const parsePdf = api.statement.parsePdf.useMutation();
-  // const [transactions, setTransactions] = useState<any[] | null>(null);
-  // const [loading, setLoading] = useState(false);
-
-  // const handleParse = async () => {
-  //   if (!file) return;
-
-  //   setLoading(true);
-  //   setError(null);
-  //   setTransactions(null);
-
-  //   try {
-  //     const arrayBuffer = await file.arrayBuffer();
-  //     const base64Pdf = Buffer.from(arrayBuffer).toString("base64");
-
-  //     const result = await parsePdf.mutateAsync({ fileBuffer: arrayBuffer });
-  //     console.log("Parsed transactions:", result);
-  //     // setTransactions(result);
-  //   } catch (err) {
-  //     console.error(err);
-  //     setError("Error processing the PDF. Please try again.");
-  //   } finally {
-  //     setLoading(false);
-  //   }
-  // };
-
   
   return (
     <div className="w-full">
