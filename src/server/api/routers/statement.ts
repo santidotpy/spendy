@@ -80,21 +80,20 @@ Texto:
 
       let parsedJson: any;
 
-    try {
-      // Intenta parsear directamente
-      parsedJson = JSON.parse(response.trim());
-    } catch {
-      // Si falla, intenta limpiar bloques markdown tipo ```json ... ```
-      const match = response.match(/\[.*\]/s); // captura array completo entre corchetes
-      if (!match) {
-        throw new Error("No se pudo encontrar un JSON válido.");
+      try {
+        // Intenta parsear directamente
+        parsedJson = JSON.parse(response.trim());
+      } catch {
+        // Si falla, intenta limpiar bloques markdown tipo ```json ... ```
+        const match = response.match(/\[.*\]/s); // captura array completo entre corchetes
+        if (!match) {
+          throw new Error("No se pudo encontrar un JSON válido.");
+        }
+
+        parsedJson = JSON.parse(match[0]);
       }
 
-      parsedJson = JSON.parse(match[0]);
-    }
-
-    const parsed = TransactionSchema.parse(parsedJson);
-    return { transactions: parsed };
-
+      const parsed = TransactionSchema.parse(parsedJson);
+      return { transactions: parsed };
     }),
 });
