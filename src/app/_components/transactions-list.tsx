@@ -34,7 +34,11 @@ export function TransactionsList({ transactions }: { transactions: TransactionOu
                   </div>
                 </div>
                 <div className="flex items-center gap-2 text-right">
-                  <Badge variant="outline" className="text-[#1c9cf0] border-white">
+                  <Badge variant="outline" 
+                  className={`
+                    border-white
+                    ${t.currency === "USD" ? "text-green-500" : "text-[#1c9cf0]"}
+                  `}>
                     {t.currency}
                   </Badge>
                   <span className="text-[#ede4d4] font-semibold">
