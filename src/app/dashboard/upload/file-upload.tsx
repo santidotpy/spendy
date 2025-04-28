@@ -13,12 +13,13 @@ import type { TransactionOutput } from "~/server/types";
 
 const MAX_RETRY_AMOUNT = 3;
 
-
 export function FileUpload() {
   const [error, setError] = useState<string | null>(null);
   const parseText = api.statement.parseText.useMutation();
   const [isPdfLibReady, setIsPdfLibReady] = useState(false);
-  const [transactions, setTransactions] = useState<TransactionOutput[] | null>(null);
+  const [transactions, setTransactions] = useState<TransactionOutput[] | null>(
+    null,
+  );
   const pdfjs = useRef<typeof PDFJS | null>(null);
   usePDFJS(async (pdfjsLib) => {
     setIsPdfLibReady(true);
@@ -105,7 +106,6 @@ export function FileUpload() {
     maxFiles: 1,
   });
 
-  
   return (
     <div className="w-full">
       <div
@@ -118,22 +118,24 @@ export function FileUpload() {
           </div>
         )}
 
-      <div className={parseText.isPending ? "invisible" : ""}>
-        <input {...getInputProps()} disabled={!isPdfLibReady || parseText.isPending} />
-        <Upload className="text-muted-foreground mx-auto h-12 w-12" />
+        <div className={parseText.isPending ? "invisible" : ""}>
+          <input
+            {...getInputProps()}
+            disabled={!isPdfLibReady || parseText.isPending}
+          />
+          <Upload className="text-muted-foreground mx-auto h-12 w-12" />
 
-        <p className="text-muted-foreground mt-4 text-sm">
-          {isDragActive
-            ? "Soltá tu resumen aquí..."
-            : "Arrastrá tu resumen de tarjeta acá, o hacé clic para seleccionarlo"}
-        </p>
-        <p className="text-muted-foreground mt-2 text-xs">
-          Solo se aceptan archivos PDF
-        </p>
+          <p className="text-muted-foreground mt-4 text-sm">
+            {isDragActive
+              ? "Soltá tu resumen aquí..."
+              : "Arrastrá tu resumen de tarjeta acá, o hacé clic para seleccionarlo"}
+          </p>
+          <p className="text-muted-foreground mt-2 text-xs">
+            Solo se aceptan archivos PDF
+          </p>
 
-        {error && <p className="mt-2 text-sm text-red-500">{error}</p>}
-  </div>
-
+          {error && <p className="mt-2 text-sm text-red-500">{error}</p>}
+        </div>
       </div>
 
       {transactions && <TransactionsList transactions={transactions} />}
