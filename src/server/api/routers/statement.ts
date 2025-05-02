@@ -1,7 +1,12 @@
 // src/server/api/routers/statement.ts
 import { z } from "zod";
-import { createTRPCRouter, publicProcedure } from "~/server/api/trpc";
+import {
+  createTRPCRouter,
+  protectedProcedure,
+  publicProcedure,
+} from "~/server/api/trpc";
 import OpenAI from "openai";
+import { transactions } from "~/server/db/schema";
 
 const openai = new OpenAI({
   apiKey: process.env.OPENAI_API_KEY!,
@@ -18,9 +23,9 @@ const TransactionSchema = z.array(
 );
 
 export const statementRouter = createTRPCRouter({
-  parseText: publicProcedure
+  parseText: protectedProcedure
     .input(z.object({ text: z.string() }))
-    .mutation(async ({ input }) => {
+    .mutation(async ({ input, ctx }) => {
       const prompt = `
       Extraé transacciones del siguiente resumen de tarjeta de crédito. Devolveme **únicamente** un JSON con esta estructura exacta:
 
@@ -53,7 +58,7 @@ Texto:
 `;
 
       const completion = await openai.chat.completions.create({
-        model: "gpt-4o",
+        model: "gpt-4.1-mini",
         messages: [
           {
             role: "system",
@@ -94,6 +99,14 @@ Texto:
       }
 
       const parsed = TransactionSchema.parse(parsedJson);
+      await ctx.db.insert(transactions).values(
+        parsed.map((transaction) => ({
+          ...transaction,
+          userId: ctx.auth.userId,
+          cardId: null, // Asignar el ID de la tarjeta si es necesario
+          amount: String(transaction.amount).replace(",", "."),
+        })),
+      );
       return { transactions: parsed };
     }),
 });
