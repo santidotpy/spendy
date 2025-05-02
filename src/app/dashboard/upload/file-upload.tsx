@@ -4,6 +4,13 @@ import { useCallback, useState, useRef } from "react";
 import { useDropzone } from "react-dropzone";
 import { Upload, X, Loader2 } from "lucide-react";
 import { Button } from "~/components/ui/button";
+import {
+  Select,
+  SelectContent,
+  SelectItem,
+  SelectTrigger,
+  SelectValue,
+} from "~/components/ui/select";
 import { api } from "~/trpc/react";
 import { Buffer } from "buffer";
 import { TransactionsList } from "~/app/_components/transactions-list";
@@ -20,6 +27,9 @@ export function FileUpload() {
   const [transactions, setTransactions] = useState<TransactionOutput[] | null>(
     null,
   );
+  const [selectedProvider, setSelectedProvider] = useState<string | null>(null);
+  const [selectedModel, setSelectedModel] = useState<string>("");
+
   const pdfjs = useRef<typeof PDFJS | null>(null);
   usePDFJS(async (pdfjsLib) => {
     setIsPdfLibReady(true);
@@ -106,8 +116,89 @@ export function FileUpload() {
     maxFiles: 1,
   });
 
+  const AI_MODELS = [
+    {
+      provider: "OpenAI",
+      id: "openai:gpt-4o",
+      label: "GPT-4o",
+    },
+    {
+      provider: "OpenAI",
+      id: "openai:gpt-4.1-mini",
+      label: "GPT-4.1 Mini",
+    },
+    {
+      provider: "Anthropic",
+      id: "anthropic:claude-3-sonnet",
+      label: "Claude 3 Sonnet",
+    },
+    {
+      provider: "Anthropic",
+      id: "anthropic:claude-3-opus",
+      label: "Claude 3 Opus",
+    },
+    {
+      provider: "xAI",
+      id: "xai:grok-1",
+      label: "Grok 1",
+    },
+    {
+      provider: "xAI",
+      id: "xai:grok-3",
+      label: "Grok 3",
+    },
+    {
+      provider: "Google",
+      id: "google:gemini-1.5-flash",
+      label: "Gemini 1.5 Flash",
+    },
+    {
+      provider: "Google",
+      id: "google:gemini-1.5-pro",
+      label: "Gemini 1.5 Pro",
+    },
+  ];
+
+  const handleModelChange = (modelId: string) => {
+    const selectedModel = AI_MODELS.find((model) => model.id === modelId);
+    if (selectedModel) {
+      setSelectedProvider(selectedModel.provider);
+      setSelectedModel(modelId);
+      console.log("Selected model:", selectedModel);
+    }
+  };
+  
+
   return (
     <div className="w-full">
+      <div className="mb-4 flex items-center justify-between">
+        <Select
+          onValueChange={(value) => handleModelChange(value)}
+          value={selectedModel}
+        >
+          <SelectTrigger className="w-[300px]">
+            <SelectValue placeholder="Seleccioná un modelo IA" />
+          </SelectTrigger>
+          <SelectContent>
+            {Array.from(new Set(AI_MODELS.map((m) => m.provider))).map(
+              (provider) => (
+                <div key={provider}>
+                  <div className="text-muted-foreground px-2 py-1 text-xs tracking-wide uppercase">
+                    {provider}
+                  </div>
+                  {AI_MODELS.filter((m) => m.provider === provider).map(
+                    (model) => (
+                      <SelectItem key={model.id} value={model.id}>
+                        {model.label}
+                      </SelectItem>
+                    ),
+                  )}
+                </div>
+              ),
+            )}
+          </SelectContent>
+        </Select>
+      </div>
       <div
         {...getRootProps()}
         className={`cursor-pointer rounded-lg border-2 border-dashed p-8 text-center transition-colors ${isDragActive ? "border-primary bg-primary/5" : "border-muted-foreground/25"} ${error ? "border-red-500" : ""}`}
