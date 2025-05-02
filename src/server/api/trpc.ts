@@ -6,11 +6,13 @@
  * TL;DR - This is where all the tRPC server stuff is created and plugged in. The pieces you will
  * need to use are documented accordingly near the end.
  */
-import { initTRPC } from "@trpc/server";
+import { initTRPC, TRPCError } from "@trpc/server";
 import superjson from "superjson";
 import { ZodError } from "zod";
+import { auth as getAuth } from "@clerk/nextjs/server";
 
 import { db } from "~/server/db";
+import { cookies } from "next/headers";
 
 /**
  * 1. CONTEXT
@@ -25,8 +27,11 @@ import { db } from "~/server/db";
  * @see https://trpc.io/docs/server/context
  */
 export const createTRPCContext = async (opts: { headers: Headers }) => {
+  const authData = await getAuth();
+
   return {
     db,
+    auth: authData,
     ...opts,
   };
 };
@@ -41,10 +46,24 @@ export const createTRPCContext = async (opts: { headers: Headers }) => {
 const t = initTRPC.context<typeof createTRPCContext>().create({
   transformer: superjson,
   errorFormatter({ shape, error }) {
+    let cause;
+
+    if (error.cause instanceof Error) {
+      try {
+        // eslint-disable-next-line @typescript-eslint/no-unsafe-assignment
+        cause = JSON.parse(error.cause.message);
+      } catch {
+        // eslint-disable-next-line @typescript-eslint/no-unused-vars
+        cause = error.cause.message;
+      }
+    }
+
     return {
       ...shape,
       data: {
         ...shape.data,
+        // eslint-disable-next-line @typescript-eslint/no-unsafe-assignment
+        cause,
         zodError:
           error.cause instanceof ZodError ? error.cause.flatten() : null,
       },
@@ -104,3 +123,25 @@ const timingMiddleware = t.middleware(async ({ next, path }) => {
  * are logged in.
  */
 export const publicProcedure = t.procedure.use(timingMiddleware);
+
+const isAuthed = t.middleware(({ next, ctx }) => {
+  if (!ctx.auth.userId) {
+    throw new TRPCError({ code: "UNAUTHORIZED" });
+  }
+
+  return next({
+    ctx: {
+      auth: ctx.auth,
+    },
+  });
+});
+
+/**
+ * Protected (authenticated) procedure
+ *
+ * This is the base piece you use to build new queries and mutations on your tRPC API that require
+ * authentication. It guarantees that a user must be logged in to access the procedure.
+ */
+export const protectedProcedure = t.procedure
+  .use(timingMiddleware)
+  .use(isAuthed);

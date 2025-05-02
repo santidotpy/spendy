@@ -8,10 +8,6 @@
     "resolveJsonModule": true,
     "moduleDetection": "force",
     "isolatedModules": true,
-    "verbatimModuleSyntax": true,
-
-    // check
-    "typeRoots": ["./src/types", "./node_modules/@types"],
 
     /* Strictness */
     "strict": true,
@@ -30,10 +26,12 @@
     /* Path Aliases */
     "baseUrl": ".",
     "paths": {
-      "~/*": ["./src/*"]
+      "~/*": ["./src/*"],
+      "~/db/*": ["./src/server/db/*"]
     }
   },
   "include": [
+    ".eslintrc.cjs",
     "next-env.d.ts",
     "**/*.ts",
     "**/*.tsx",
