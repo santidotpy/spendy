@@ -14,6 +14,11 @@ import {
   SquareTerminal,
   FileUp,
   Banknote,
+  BadgeDollarSign,
+  DollarSign,
+  LayoutDashboardIcon,
+  ChartColumnBigIcon,
+  PieChartIcon
 } from "lucide-react"
 
 import { NavMain } from "~/components/nav-main"
@@ -141,19 +146,19 @@ const data = {
   ],
   projects: [
     {
+      name: "Dashboard",
+      url: "/dashboard",
+      icon: PieChartIcon,
+    },
+    {
+      name: "Transacciones",
+      url: "/dashboard/transactions",
+      icon: DollarSign,
+    },
+    {
       name: "Subir resumen",
       url: "/dashboard/upload",
       icon: FileUp,
-    },
-    {
-      name: "Sales & Marketing",
-      url: "#",
-      icon: PieChart,
-    },
-    {
-      name: "Travel",
-      url: "#",
-      icon: Map,
     },
   ],
 }
