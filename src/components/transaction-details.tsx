@@ -53,7 +53,7 @@ const getCategoryColor = (category: string) => {
     Income: "bg-green-100 text-green-800 dark:bg-green-900 dark:text-green-200",
   }
 
-  return categories[category] || "bg-slate-100 text-slate-800 dark:bg-slate-800 dark:text-slate-200"
+  return categories[category] || "bg-neutral-100 text-neutral-800 dark:bg-neutral-800 dark:text-neutral-200"
 }
 
 const formatDate = (dateString: string) => {
@@ -75,14 +75,14 @@ export default function TransactionDetails({transaction}: { transaction: Transac
       <div className="container mx-auto p-4">
         <button
           onClick={() => router.back()}
-          className="mb-4 flex items-center gap-1 rounded-md bg-slate-100 px-3 py-1.5 text-sm font-medium text-slate-700 transition-colors hover:bg-slate-200 dark:bg-slate-800 dark:text-slate-300 dark:hover:bg-slate-700"
+          className="mb-4 flex items-center gap-1 rounded-md bg-neutral-100 px-3 py-1.5 text-sm font-medium text-neutral-700 transition-colors hover:bg-neutral-200 dark:bg-neutral-800 dark:text-neutral-300 dark:hover:bg-neutral-700"
         >
           <ArrowLeft className="h-4 w-4" />
           Back to transactions
         </button>
-        <div className="rounded-xl bg-white p-8 text-center shadow-md dark:bg-slate-900">
-          <h1 className="text-xl font-bold text-slate-900 dark:text-white">Transaction not found</h1>
-          <p className="mt-2 text-slate-500 dark:text-slate-400">
+        <div className="rounded-xl bg-white p-8 text-center shadow-md dark:bg-neutral-900">
+          <h1 className="text-xl font-bold text-neutral-900 dark:text-white">Transaction not found</h1>
+          <p className="mt-2 text-neutral-500 dark:text-neutral-400">
             The transaction you're looking for doesn't exist or has been removed.
           </p>
         </div>
@@ -102,7 +102,7 @@ export default function TransactionDetails({transaction}: { transaction: Transac
     <div className="container mx-auto p-4">
       <button
         onClick={() => router.push("/dashboard/transactions")}
-        className="mb-4 flex items-center gap-1 rounded-md bg-slate-100 px-3 py-1.5 text-sm font-medium text-slate-700 transition-colors hover:bg-slate-200 dark:bg-slate-800 dark:text-slate-300 dark:hover:bg-slate-700"
+        className="mb-4 flex items-center gap-1 rounded-md bg-neutral-100 px-3 py-1.5 text-sm font-medium text-neutral-700 transition-colors hover:bg-neutral-200 dark:bg-neutral-800 dark:text-neutral-300 dark:hover:bg-neutral-700"
       >
         <ArrowLeft className="h-4 w-4" />
         Back to transactions
@@ -111,14 +111,14 @@ export default function TransactionDetails({transaction}: { transaction: Transac
       <motion.div
         initial={{ opacity: 0, y: 20 }}
         animate={{ opacity: 1, y: 0 }}
-        className="overflow-hidden rounded-xl border-none bg-gradient-to-br from-slate-50 to-slate-100 shadow-xl dark:from-slate-900 dark:to-slate-800"
+        className="overflow-hidden rounded-xl border-none bg-gradient-to-br from-neutral-50 to-neutral-100 shadow-xl dark:from-neutral-900 dark:to-neutral-800"
       >
         {/* Header */}
-        <div className="border-b border-slate-200 bg-white px-6 py-5 dark:border-slate-700 dark:bg-slate-900">
+        <div className="border-b border-neutral-200 bg-white px-6 py-5 dark:border-neutral-700 dark:bg-neutral-900">
           <div className="flex flex-col items-start justify-between gap-2 sm:flex-row sm:items-center">
             <div>
-              <h1 className="text-xl font-bold text-slate-900 dark:text-white">{transaction.description}</h1>
-              <p className="mt-1 text-sm text-slate-500 dark:text-slate-400">Transaction ID: {transaction.id}</p>
+              <h1 className="text-xl font-bold text-neutral-900 dark:text-white">{transaction.description}</h1>
+              <p className="mt-1 text-sm text-neutral-500 dark:text-neutral-400">Transaction ID: {transaction.id}</p>
             </div>
             <div
               className={cn(
@@ -134,7 +134,7 @@ export default function TransactionDetails({transaction}: { transaction: Transac
         </div>
 
         {/* Transaction Amount */}
-        <div className="bg-white px-6 py-8 text-center dark:bg-slate-900">
+        <div className="bg-white px-6 py-8 text-center dark:bg-neutral-900">
           <div
             className={cn(
               "text-4xl font-bold",
@@ -144,12 +144,12 @@ export default function TransactionDetails({transaction}: { transaction: Transac
             {isPositive ? "+" : "-"}
             {formattedAmount}
           </div>
-          <p className="mt-1 text-sm text-slate-500 dark:text-slate-400">{formatDate(transaction.date)}</p>
+          <p className="mt-1 text-sm text-neutral-500 dark:text-neutral-400">{formatDate(transaction.date)}</p>
 
           {/* Installment Badge */}
           {/* {transaction.isInstallment && (
             <div className="mt-3 flex justify-center">
-              <div className="rounded-full bg-slate-100 px-4 py-1 text-sm font-medium text-slate-700 dark:bg-slate-800 dark:text-slate-300">
+              <div className="rounded-full bg-neutral-100 px-4 py-1 text-sm font-medium text-neutral-700 dark:bg-neutral-800 dark:text-neutral-300">
                 Cuota {transaction.currentInstallment} de {transaction.totalInstallments}
               </div>
             </div>
@@ -157,19 +157,19 @@ export default function TransactionDetails({transaction}: { transaction: Transac
         </div>
 
         {/* Transaction Details */}
-        <div className="grid gap-6 bg-slate-50 px-6 py-6 dark:bg-slate-800/50 md:grid-cols-2">
-          <div className="rounded-lg bg-white p-4 shadow-sm dark:bg-slate-900">
+        <div className="grid gap-6 bg-neutral-50 px-6 py-6 dark:bg-neutral-800/50 md:grid-cols-2">
+          <div className="rounded-lg bg-white p-4 shadow-sm dark:bg-neutral-900">
             <div className="flex items-center gap-2">
-              <Calendar className="h-5 w-5 text-slate-400" />
-              <h3 className="font-medium text-slate-700 dark:text-slate-300">Date</h3>
+              <Calendar className="h-5 w-5 text-neutral-400" />
+              <h3 className="font-medium text-neutral-700 dark:text-neutral-300">Date</h3>
             </div>
-            <p className="mt-2 text-slate-900 dark:text-white">{formatDate(transaction.date)}</p>
+            <p className="mt-2 text-neutral-900 dark:text-white">{formatDate(transaction.date)}</p>
           </div>
 
-          <div className="rounded-lg bg-white p-4 shadow-sm dark:bg-slate-900">
+          <div className="rounded-lg bg-white p-4 shadow-sm dark:bg-neutral-900">
             <div className="flex items-center gap-2">
-              <Tag className="h-5 w-5 text-slate-400" />
-              <h3 className="font-medium text-slate-700 dark:text-slate-300">Category</h3>
+              <Tag className="h-5 w-5 text-neutral-400" />
+              <h3 className="font-medium text-neutral-700 dark:text-neutral-300">Category</h3>
             </div>
             <div className="mt-2">
               <span
@@ -183,10 +183,10 @@ export default function TransactionDetails({transaction}: { transaction: Transac
             </div>
           </div>
 
-          <div className="rounded-lg bg-white p-4 shadow-sm dark:bg-slate-900">
+          <div className="rounded-lg bg-white p-4 shadow-sm dark:bg-neutral-900">
             <div className="flex items-center gap-2">
-              <DollarSign className="h-5 w-5 text-slate-400" />
-              <h3 className="font-medium text-slate-700 dark:text-slate-300">Amount</h3>
+              <DollarSign className="h-5 w-5 text-neutral-400" />
+              <h3 className="font-medium text-neutral-700 dark:text-neutral-300">Amount</h3>
             </div>
             <p
               className={cn(
@@ -199,49 +199,49 @@ export default function TransactionDetails({transaction}: { transaction: Transac
             </p>
           </div>
 
-          {/* <div className="rounded-lg bg-white p-4 shadow-sm dark:bg-slate-900">
+          {/* <div className="rounded-lg bg-white p-4 shadow-sm dark:bg-neutral-900">
             <div className="flex items-center gap-2">
-              <FileText className="h-5 w-5 text-slate-400" />
-              <h3 className="font-medium text-slate-700 dark:text-slate-300">Reference</h3>
+              <FileText className="h-5 w-5 text-neutral-400" />
+              <h3 className="font-medium text-neutral-700 dark:text-neutral-300">Reference</h3>
             </div>
-            <p className="mt-2 text-slate-900 dark:text-white">{transaction.reference || "N/A"}</p>
+            <p className="mt-2 text-neutral-900 dark:text-white">{transaction.reference || "N/A"}</p>
           </div>
 
-          <div className="rounded-lg bg-white p-4 shadow-sm dark:bg-slate-900">
+          <div className="rounded-lg bg-white p-4 shadow-sm dark:bg-neutral-900">
             <div className="flex items-center gap-2">
-              <CheckCircle className="h-5 w-5 text-slate-400" />
-              <h3 className="font-medium text-slate-700 dark:text-slate-300">Status</h3>
+              <CheckCircle className="h-5 w-5 text-neutral-400" />
+              <h3 className="font-medium text-neutral-700 dark:text-neutral-300">Status</h3>
             </div>
-            <p className="mt-2 text-slate-900 dark:text-white">{transaction.status || "N/A"}</p>
+            <p className="mt-2 text-neutral-900 dark:text-white">{transaction.status || "N/A"}</p>
           </div>
 
-          <div className="rounded-lg bg-white p-4 shadow-sm dark:bg-slate-900">
+          <div className="rounded-lg bg-white p-4 shadow-sm dark:bg-neutral-900">
             <div className="flex items-center gap-2">
-              <PaymentIcon className="h-5 w-5 text-slate-400" />
-              <h3 className="font-medium text-slate-700 dark:text-slate-300">Payment Method</h3>
+              <PaymentIcon className="h-5 w-5 text-neutral-400" />
+              <h3 className="font-medium text-neutral-700 dark:text-neutral-300">Payment Method</h3>
             </div>
-            <p className="mt-2 text-slate-900 dark:text-white">{transaction.paymentMethod || "N/A"}</p>
+            <p className="mt-2 text-neutral-900 dark:text-white">{transaction.paymentMethod || "N/A"}</p>
           </div> */}
 
           {/* Installment Details */}
           {/* {transaction.isInstallment && (
             <>
-              <div className="rounded-lg bg-white p-4 shadow-sm dark:bg-slate-900">
+              <div className="rounded-lg bg-white p-4 shadow-sm dark:bg-neutral-900">
                 <div className="flex items-center gap-2">
-                  <Layers className="h-5 w-5 text-slate-400" />
-                  <h3 className="font-medium text-slate-700 dark:text-slate-300">Installment</h3>
+                  <Layers className="h-5 w-5 text-neutral-400" />
+                  <h3 className="font-medium text-neutral-700 dark:text-neutral-300">Installment</h3>
                 </div>
-                <p className="mt-2 text-slate-900 dark:text-white">
+                <p className="mt-2 text-neutral-900 dark:text-white">
                   Cuota {transaction.currentInstallment} de {transaction.totalInstallments}
                 </p>
               </div>
 
-              <div className="rounded-lg bg-white p-4 shadow-sm dark:bg-slate-900">
+              <div className="rounded-lg bg-white p-4 shadow-sm dark:bg-neutral-900">
                 <div className="flex items-center gap-2">
-                  <Clock className="h-5 w-5 text-slate-400" />
-                  <h3 className="font-medium text-slate-700 dark:text-slate-300">Last Payment</h3>
+                  <Clock className="h-5 w-5 text-neutral-400" />
+                  <h3 className="font-medium text-neutral-700 dark:text-neutral-300">Last Payment</h3>
                 </div>
-                <p className="mt-2 text-slate-900 dark:text-white">
+                <p className="mt-2 text-neutral-900 dark:text-white">
                   {transaction.lastInstallmentDate ? formatDate(transaction.lastInstallmentDate) : "N/A"}
                 </p>
               </div>
@@ -251,9 +251,9 @@ export default function TransactionDetails({transaction}: { transaction: Transac
 
         {/* Notes */}
         {/* {transaction.notes && (
-          <div className="border-t border-slate-200 bg-white px-6 py-6 dark:border-slate-700 dark:bg-slate-900">
-            <h3 className="mb-2 font-medium text-slate-700 dark:text-slate-300">Notes</h3>
-            <p className="text-slate-600 dark:text-slate-400">{transaction.notes}</p>
+          <div className="border-t border-neutral-200 bg-white px-6 py-6 dark:border-neutral-700 dark:bg-neutral-900">
+            <h3 className="mb-2 font-medium text-neutral-700 dark:text-neutral-300">Notes</h3>
+            <p className="text-neutral-600 dark:text-neutral-400">{transaction.notes}</p>
           </div>
         )} */}
       </motion.div>

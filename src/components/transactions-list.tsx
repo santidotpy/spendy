@@ -94,13 +94,13 @@ export function TransactionsList({ transactions }: { transactions: TransactionOu
 
   if (!transactions || transactions.length === 0) {
     return (
-      <div className="mt-6 overflow-hidden rounded-xl border-none bg-gradient-to-br from-slate-50 to-slate-100 shadow-lg dark:from-slate-900 dark:to-slate-800">
+      <div className="mt-6 overflow-hidden rounded-xl border-none bg-gradient-to-br from-neutral-50 to-neutral-100 shadow-lg dark:from-neutral-900 dark:to-neutral-800">
         <div className="flex flex-col items-center justify-center p-12">
-          <div className="rounded-full bg-slate-100 p-4 dark:bg-slate-800">
-            <CreditCard className="h-10 w-10 text-slate-400" />
+          <div className="rounded-full bg-neutral-100 p-4 dark:bg-neutral-800">
+            <CreditCard className="h-10 w-10 text-neutral-400" />
           </div>
-          <h3 className="mt-4 text-xl font-medium text-slate-700 dark:text-slate-200">No transactions yet</h3>
-          <p className="mt-2 text-center text-sm text-slate-500 dark:text-slate-400">
+          <h3 className="mt-4 text-xl font-medium text-neutral-700 dark:text-neutral-200">No transactions yet</h3>
+          <p className="mt-2 text-center text-sm text-neutral-500 dark:text-neutral-400">
             Upload a statement to extract your transactions
           </p>
         </div>
@@ -167,7 +167,7 @@ export function TransactionsList({ transactions }: { transactions: TransactionOu
       Income: "bg-green-100 text-green-800 dark:bg-green-900 dark:text-green-200",
     }
 
-    return categories[category] || "bg-slate-100 text-slate-800 dark:bg-slate-800 dark:text-slate-200"
+    return categories[category] || "bg-neutral-100 text-neutral-800 dark:bg-neutral-800 dark:text-neutral-200"
   }
 
   const formatDate = (dateString: string) => {
@@ -188,38 +188,38 @@ export function TransactionsList({ transactions }: { transactions: TransactionOu
   }).format(totalAmount)
 
   return (
-    <div className="mt-6 overflow-hidden rounded-xl border-none bg-gradient-to-br from-slate-50 to-slate-100 shadow-xl dark:from-slate-900 dark:to-slate-800">
+    <div className="mt-6 overflow-hidden rounded-xl border-none bg-gradient-to-br from-neutral-50 to-neutral-100 shadow-xl dark:from-neutral-900 dark:to-neutral-800">
       {/* Card Header */}
-      <div className="border-b border-slate-200 bg-white px-6 py-4 dark:border-slate-700 dark:bg-slate-900">
+      <div className="border-b border-neutral-200 bg-white px-6 py-4 dark:border-neutral-700 dark:bg-neutral-900">
         <div className="flex flex-col space-y-3 sm:flex-row sm:items-center sm:justify-between sm:space-y-0">
           <div>
-            <h2 className="text-xl font-semibold tracking-tight text-slate-900 dark:text-white">Transactions</h2>
-            <p className="mt-1 text-sm text-slate-500 dark:text-slate-400">
+            <h2 className="text-xl font-semibold tracking-tight text-neutral-900 dark:text-white">Transactions</h2>
+            <p className="mt-1 text-sm text-neutral-500 dark:text-neutral-400">
               {sortedTransactions.length} transactions found • Total: {formattedTotal}
             </p>
           </div>
           <div className="flex gap-2">
             <div className="relative w-full sm:w-64">
-              <Search className="absolute left-3 top-1/2 h-4 w-4 -translate-y-1/2 text-slate-400" />
+              <Search className="absolute left-3 top-1/2 h-4 w-4 -tranneutral-y-1/2 text-neutral-400" />
               <input
                 type="text"
                 placeholder="Search transactions..."
                 value={searchTerm}
                 onChange={(e) => setSearchTerm(e.target.value)}
-                className="w-full rounded-md border border-slate-200 bg-white px-4 py-2 pl-9 pr-4 text-sm outline-none focus:border-slate-400 focus:ring-2 focus:ring-slate-300 dark:border-slate-700 dark:bg-slate-800 dark:text-slate-100 dark:focus:border-slate-500 dark:focus:ring-slate-700"
+                className="w-full rounded-md border border-neutral-200 bg-white px-4 py-2 pl-9 pr-4 text-sm outline-none focus:border-neutral-400 focus:ring-2 focus:ring-neutral-300 dark:border-neutral-700 dark:bg-neutral-800 dark:text-neutral-100 dark:focus:border-neutral-500 dark:focus:ring-neutral-700"
               />
             </div>
             <button
               onClick={() => setShowFilters(!showFilters)}
               className={cn(
-                "flex items-center gap-1 rounded-md border border-slate-200 bg-white px-3 py-2 text-sm font-medium text-slate-700 transition-colors hover:bg-slate-50 dark:border-slate-700 dark:bg-slate-800 dark:text-slate-200 dark:hover:bg-slate-700",
-                showFilters && "bg-slate-100 dark:bg-slate-700",
+                "flex items-center gap-1 rounded-md border border-neutral-200 bg-white px-3 py-2 text-sm font-medium text-neutral-700 transition-colors hover:bg-neutral-50 dark:border-neutral-700 dark:bg-neutral-800 dark:text-neutral-200 dark:hover:bg-neutral-700",
+                showFilters && "bg-neutral-100 dark:bg-neutral-700",
               )}
             >
               <Filter className="h-4 w-4" />
               <span className="hidden sm:inline">Filters</span>
               {hasActiveFilters && (
-                <span className="ml-1 flex h-5 w-5 items-center justify-center rounded-full bg-slate-700 text-xs text-white dark:bg-slate-200 dark:text-slate-800">
+                <span className="ml-1 flex h-5 w-5 items-center justify-center rounded-full bg-neutral-700 text-xs text-white dark:bg-neutral-200 dark:text-neutral-800">
                   {(selectedCategories.length > 0 ? 1 : 0) + (startDate || endDate ? 1 : 0)}
                 </span>
               )}
@@ -235,15 +235,15 @@ export function TransactionsList({ transactions }: { transactions: TransactionOu
             initial={{ height: 0, opacity: 0 }}
             animate={{ height: "auto", opacity: 1 }}
             exit={{ height: 0, opacity: 0 }}
-            className="border-b border-slate-200 bg-slate-50 dark:border-slate-700 dark:bg-slate-800/50"
+            className="border-b border-neutral-200 bg-neutral-50 dark:border-neutral-700 dark:bg-neutral-800/50"
           >
             <div className="p-4">
               <div className="flex items-center justify-between">
-                <h3 className="text-sm font-medium text-slate-700 dark:text-slate-300">Filters</h3>
+                <h3 className="text-sm font-medium text-neutral-700 dark:text-neutral-300">Filters</h3>
                 {hasActiveFilters && (
                   <button
                     onClick={clearFilters}
-                    className="flex items-center gap-1 rounded-md px-2 py-1 text-xs font-medium text-slate-600 hover:bg-slate-200 dark:text-slate-400 dark:hover:bg-slate-700"
+                    className="flex items-center gap-1 rounded-md px-2 py-1 text-xs font-medium text-neutral-600 hover:bg-neutral-200 dark:text-neutral-400 dark:hover:bg-neutral-700"
                   >
                     <X className="h-3 w-3" />
                     Clear all
@@ -254,7 +254,7 @@ export function TransactionsList({ transactions }: { transactions: TransactionOu
               <div className="mt-3 grid gap-4 md:grid-cols-2">
                 {/* Date Range Filter */}
                 <div>
-                  <h4 className="mb-2 text-xs font-medium text-slate-500 dark:text-slate-400">Date Range</h4>
+                  <h4 className="mb-2 text-xs font-medium text-neutral-500 dark:text-neutral-400">Date Range</h4>
                   <div className="flex gap-2">
                     <div className="w-full">
                       <DatePicker
@@ -272,7 +272,7 @@ export function TransactionsList({ transactions }: { transactions: TransactionOu
 
                 {/* Categories Filter */}
                 <div>
-                  <h4 className="mb-2 text-xs font-medium text-slate-500 dark:text-slate-400">Categories</h4>
+                  <h4 className="mb-2 text-xs font-medium text-neutral-500 dark:text-neutral-400">Categories</h4>
                   <div className="flex flex-wrap gap-2">
                     {uniqueCategories.map((category) => (
                       <button
@@ -282,7 +282,7 @@ export function TransactionsList({ transactions }: { transactions: TransactionOu
                           "rounded-full border px-3 py-1 text-xs font-medium transition-colors",
                           selectedCategories.includes(category)
                             ? getCategoryColor(category)
-                            : "border-slate-200 bg-white text-slate-700 hover:bg-slate-50 dark:border-slate-700 dark:bg-slate-800 dark:text-slate-300 dark:hover:bg-slate-700",
+                            : "border-neutral-200 bg-white text-neutral-700 hover:bg-neutral-50 dark:border-neutral-700 dark:bg-neutral-800 dark:text-neutral-300 dark:hover:bg-neutral-700",
                         )}
                       >
                         {category}
@@ -298,15 +298,15 @@ export function TransactionsList({ transactions }: { transactions: TransactionOu
 
       {/* Tabs */}
       <div className="w-full">
-        <div className="border-b border-slate-200 bg-slate-50 px-6 dark:border-slate-700 dark:bg-slate-800/50">
+        <div className="border-b border-neutral-200 bg-neutral-50 px-6 dark:border-neutral-700 dark:bg-neutral-800/50">
           <div className="flex h-12 space-x-1">
             <button
               onClick={() => setActiveTab("all")}
               className={cn(
                 "rounded-md px-3 py-2 text-sm font-medium transition-colors",
                 activeTab === "all"
-                  ? "bg-white shadow-sm dark:bg-slate-800"
-                  : "text-slate-600 hover:bg-slate-100 hover:text-slate-900 dark:text-slate-400 dark:hover:bg-slate-800/60 dark:hover:text-slate-300",
+                  ? "bg-white shadow-sm dark:bg-neutral-800"
+                  : "text-neutral-600 hover:bg-neutral-100 hover:text-neutral-900 dark:text-neutral-400 dark:hover:bg-neutral-800/60 dark:hover:text-neutral-300",
               )}
             >
               All
@@ -316,8 +316,8 @@ export function TransactionsList({ transactions }: { transactions: TransactionOu
               className={cn(
                 "rounded-md px-3 py-2 text-sm font-medium transition-colors",
                 activeTab === "income"
-                  ? "bg-white shadow-sm dark:bg-slate-800"
-                  : "text-slate-600 hover:bg-slate-100 hover:text-slate-900 dark:text-slate-400 dark:hover:bg-slate-800/60 dark:hover:text-slate-300",
+                  ? "bg-white shadow-sm dark:bg-neutral-800"
+                  : "text-neutral-600 hover:bg-neutral-100 hover:text-neutral-900 dark:text-neutral-400 dark:hover:bg-neutral-800/60 dark:hover:text-neutral-300",
               )}
             >
               Income
@@ -327,8 +327,8 @@ export function TransactionsList({ transactions }: { transactions: TransactionOu
               className={cn(
                 "rounded-md px-3 py-2 text-sm font-medium transition-colors",
                 activeTab === "expenses"
-                  ? "bg-white shadow-sm dark:bg-slate-800"
-                  : "text-slate-600 hover:bg-slate-100 hover:text-slate-900 dark:text-slate-400 dark:hover:bg-slate-800/60 dark:hover:text-slate-300",
+                  ? "bg-white shadow-sm dark:bg-neutral-800"
+                  : "text-neutral-600 hover:bg-neutral-100 hover:text-neutral-900 dark:text-neutral-400 dark:hover:bg-neutral-800/60 dark:hover:text-neutral-300",
               )}
             >
               Expenses
@@ -339,9 +339,9 @@ export function TransactionsList({ transactions }: { transactions: TransactionOu
         {/* Tab Content */}
         <div>
           <div className="p-0">
-            <div className="flex items-center justify-between border-b border-slate-200 bg-white px-6 py-3 text-sm font-medium text-slate-500 dark:border-slate-700 dark:bg-slate-900 dark:text-slate-400">
+            <div className="flex items-center justify-between border-b border-neutral-200 bg-white px-6 py-3 text-sm font-medium text-neutral-500 dark:border-neutral-700 dark:bg-neutral-900 dark:text-neutral-400">
               <button
-                className="flex items-center gap-1 rounded-md px-2 py-1 font-medium hover:bg-slate-100 dark:hover:bg-slate-800"
+                className="flex items-center gap-1 rounded-md px-2 py-1 font-medium hover:bg-neutral-100 dark:hover:bg-neutral-800"
                 onClick={() => toggleSort("date")}
               >
                 Date
@@ -349,7 +349,7 @@ export function TransactionsList({ transactions }: { transactions: TransactionOu
                   (sortDirection === "asc" ? <ChevronUp className="h-4 w-4" /> : <ChevronDown className="h-4 w-4" />)}
               </button>
               <button
-                className="flex items-center gap-1 rounded-md px-2 py-1 font-medium hover:bg-slate-100 dark:hover:bg-slate-800"
+                className="flex items-center gap-1 rounded-md px-2 py-1 font-medium hover:bg-neutral-100 dark:hover:bg-neutral-800"
                 onClick={() => toggleSort("amount")}
               >
                 Amount
@@ -360,18 +360,18 @@ export function TransactionsList({ transactions }: { transactions: TransactionOu
 
             {sortedTransactions.length === 0 ? (
               <div className="p-6 text-center">
-                <p className="text-slate-500 dark:text-slate-400">No {activeTab} transactions found</p>
+                <p className="text-neutral-500 dark:text-neutral-400">No {activeTab} transactions found</p>
                 {hasActiveFilters && (
                   <button
                     onClick={clearFilters}
-                    className="mt-2 rounded-md bg-slate-100 px-3 py-1 text-sm font-medium text-slate-700 hover:bg-slate-200 dark:bg-slate-800 dark:text-slate-300 dark:hover:bg-slate-700"
+                    className="mt-2 rounded-md bg-neutral-100 px-3 py-1 text-sm font-medium text-neutral-700 hover:bg-neutral-200 dark:bg-neutral-800 dark:text-neutral-300 dark:hover:bg-neutral-700"
                   >
                     Clear filters
                   </button>
                 )}
               </div>
             ) : (
-              <ul className="divide-y divide-slate-200 dark:divide-slate-700">
+              <ul className="divide-y divide-neutral-200 dark:divide-neutral-700">
                 <AnimatePresence>
                   {sortedTransactions.map((transaction, index) => {
                     const isExpanded = expandedTransaction === index
@@ -391,8 +391,8 @@ export function TransactionsList({ transactions }: { transactions: TransactionOu
                         exit={{ opacity: 0, height: 0 }}
                         transition={{ delay: index * 0.03 }}
                         className={cn(
-                          "relative cursor-pointer bg-white transition-colors hover:bg-slate-50 dark:bg-slate-900 dark:hover:bg-slate-800/80",
-                          isExpanded && "bg-slate-50 dark:bg-slate-800/80",
+                          "relative cursor-pointer bg-white transition-colors hover:bg-neutral-50 dark:bg-neutral-900 dark:hover:bg-neutral-800/80",
+                          isExpanded && "bg-neutral-50 dark:bg-neutral-800/80",
                         )}
                         onClick={() => setExpandedTransaction(isExpanded ? null : index)}
                       >
@@ -414,12 +414,12 @@ export function TransactionsList({ transactions }: { transactions: TransactionOu
                             </div>
 
                             <div>
-                              <h4 className="font-medium text-slate-900 dark:text-white">
+                              <h4 className="font-medium text-neutral-900 dark:text-white">
                                 {transaction.description.length > 30
                                   ? `${transaction.description.substring(0, 30)}...`
                                   : transaction.description}
                               </h4>
-                              <div className="mt-1 flex items-center gap-2 text-xs text-slate-500 dark:text-slate-400">
+                              <div className="mt-1 flex items-center gap-2 text-xs text-neutral-500 dark:text-neutral-400">
                                 <span className="flex items-center gap-1">
                                   <Calendar className="h-3 w-3" />
                                   {formatDate(transaction.date)}
@@ -433,7 +433,7 @@ export function TransactionsList({ transactions }: { transactions: TransactionOu
                                   {transaction.category}
                                 </span>
                                 {/* {transaction.isInstallment && (
-                                  <span className="inline-flex items-center rounded-full bg-slate-100 px-2 py-0.5 text-xs font-normal text-slate-700 dark:bg-slate-800 dark:text-slate-300">
+                                  <span className="inline-flex items-center rounded-full bg-neutral-100 px-2 py-0.5 text-xs font-normal text-neutral-700 dark:bg-neutral-800 dark:text-neutral-300">
                                     Installment
                                   </span>
                                 )} */}
@@ -447,7 +447,7 @@ export function TransactionsList({ transactions }: { transactions: TransactionOu
                                 e.stopPropagation()
                                 router.push(`/dashboard/transactions/${transaction.id}`)
                               }}
-                              className=" cursor-pointer flex items-center gap-1 rounded-md bg-slate-100 px-2 py-1 text-xs font-medium text-slate-700 transition-colors hover:bg-slate-200 dark:bg-slate-800 dark:text-slate-300 dark:hover:bg-slate-700"
+                              className=" cursor-pointer flex items-center gap-1 rounded-md bg-neutral-100 px-2 py-1 text-xs font-medium text-neutral-700 transition-colors hover:bg-neutral-200 dark:bg-neutral-800 dark:text-neutral-300 dark:hover:bg-neutral-700"
                             >
                               <ExternalLink className="h-3 w-3" />
                               Detalles
@@ -470,23 +470,23 @@ export function TransactionsList({ transactions }: { transactions: TransactionOu
                               initial={{ height: 0, opacity: 0 }}
                               animate={{ height: "auto", opacity: 1 }}
                               exit={{ height: 0, opacity: 0 }}
-                              className="border-t border-slate-200 bg-slate-50 px-6 py-4 dark:border-slate-700 dark:bg-slate-800/50"
+                              className="border-t border-neutral-200 bg-neutral-50 px-6 py-4 dark:border-neutral-700 dark:bg-neutral-800/50"
                             >
                               <div className="grid gap-3 text-sm md:grid-cols-2">
                                 <div>
-                                  <p className="font-medium text-slate-500 dark:text-slate-400">Description</p>
-                                  <p className="mt-1 text-slate-900 dark:text-white">{transaction.description}</p>
+                                  <p className="font-medium text-neutral-500 dark:text-neutral-400">Description</p>
+                                  <p className="mt-1 text-neutral-900 dark:text-white">{transaction.description}</p>
                                 </div>
                                 <div>
-                                  <p className="font-medium text-slate-500 dark:text-slate-400">Category</p>
-                                  <p className="mt-1 text-slate-900 dark:text-white">{transaction.category}</p>
+                                  <p className="font-medium text-neutral-500 dark:text-neutral-400">Category</p>
+                                  <p className="mt-1 text-neutral-900 dark:text-white">{transaction.category}</p>
                                 </div>
                                 <div>
-                                  <p className="font-medium text-slate-500 dark:text-slate-400">Date</p>
-                                  <p className="mt-1 text-slate-900 dark:text-white">{formatDate(transaction.date)}</p>
+                                  <p className="font-medium text-neutral-500 dark:text-neutral-400">Date</p>
+                                  <p className="mt-1 text-neutral-900 dark:text-white">{formatDate(transaction.date)}</p>
                                 </div>
                                 <div>
-                                  <p className="font-medium text-slate-500 dark:text-slate-400">Amount</p>
+                                  <p className="font-medium text-neutral-500 dark:text-neutral-400">Amount</p>
                                   <p
                                     className={cn(
                                       "mt-1 font-medium",
@@ -501,8 +501,8 @@ export function TransactionsList({ transactions }: { transactions: TransactionOu
                                 </div>
                                 {/* {transaction.isInstallment && (
                                   <div>
-                                    <p className="font-medium text-slate-500 dark:text-slate-400">Installment</p>
-                                    <p className="mt-1 text-slate-900 dark:text-white">
+                                    <p className="font-medium text-neutral-500 dark:text-neutral-400">Installment</p>
+                                    <p className="mt-1 text-neutral-900 dark:text-white">
                                       Cuota {transaction.currentInstallment} de {transaction.totalInstallments}
                                     </p>
                                   </div>
@@ -528,7 +528,7 @@ export function TransactionsList({ transactions }: { transactions: TransactionOu
 export default function TransactionsPage({transactions}: { transactions: TransactionOutput[] }) {
   return (
     <div className="container mx-auto p-4">
-      <h1 className="mb-6 text-2xl font-bold text-slate-900 dark:text-white">Financial Dashboard</h1>
+      <h1 className="mb-6 text-2xl font-bold text-neutral-900 dark:text-white">Financial Dashboard</h1>
       <TransactionsList transactions={transactions} />
     </div>
   )
