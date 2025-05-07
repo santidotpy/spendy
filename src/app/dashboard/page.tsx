@@ -1,17 +1,11 @@
+import { api } from "~/trpc/server";
+import DashboardGraphs from "~/components/dashboard-graphs";
 
-
-export default function DashboardPage() {
+export default async function Page() {
+  const data = await api.transactions.getAll();
   return (
-    <div>
-      <div className="flex justify-between items-center mb-8">
-        <h1 className="text-3xl font-bold">Dashboard</h1>
-      </div>
-
-      <div className="grid gap-6">
-        <p className="text-muted-foreground">
-          Welcome to your dashboard! Use the sidebar to navigate through different sections.
-        </p>
-      </div>
-    </div>
+    <main className="container mx-auto p-4">
+      <DashboardGraphs transactions={data} />
+    </main>
   );
 }
