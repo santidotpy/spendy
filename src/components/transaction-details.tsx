@@ -90,7 +90,7 @@ export default function TransactionDetails({transaction}: { transaction: Transac
     )
   }
 
-  const isPositive = Number.parseFloat(transaction.amount) > 0
+  const isPositive = Number.parseFloat(transaction.amount) < 0
   const formattedAmount = new Intl.NumberFormat("en-US", {
     style: "currency",
     currency: "USD",
