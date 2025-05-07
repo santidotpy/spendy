@@ -91,7 +91,6 @@ export function TransactionsList({ transactions }: { transactions: TransactionOu
 
   // Check if any filters are active
   const hasActiveFilters = startDate || endDate || selectedCategories.length > 0 || searchTerm
-
   if (!transactions || transactions.length === 0) {
     return (
       <div className="mt-6 overflow-hidden rounded-xl border-none bg-gradient-to-br from-neutral-50 to-neutral-100 shadow-lg dark:from-neutral-900 dark:to-neutral-800">
@@ -128,8 +127,8 @@ export function TransactionsList({ transactions }: { transactions: TransactionOu
   // Filter transactions based on active tab
   const tabFilteredTransactions = filteredTransactions.filter((t) => {
     if (activeTab === "all") return true
-    if (activeTab === "income") return Number.parseFloat(t.amount) > 0
-    if (activeTab === "expenses") return Number.parseFloat(t.amount) < 0
+    if (activeTab === "income") return Number.parseFloat(t.amount) < 0
+    if (activeTab === "expenses") return Number.parseFloat(t.amount) > 0
     return true
   })
 
@@ -193,7 +192,7 @@ export function TransactionsList({ transactions }: { transactions: TransactionOu
       <div className="border-b border-neutral-200 bg-white px-6 py-4 dark:border-neutral-700 dark:bg-neutral-900">
         <div className="flex flex-col space-y-3 sm:flex-row sm:items-center sm:justify-between sm:space-y-0">
           <div>
-            <h2 className="text-xl font-semibold tracking-tight text-neutral-900 dark:text-white">Transactions</h2>
+            <h2 className="text-xl font-semibold tracking-tight text-neutral-900 dark:text-white">Transacciones</h2>
             <p className="mt-1 text-sm text-neutral-500 dark:text-neutral-400">
               {sortedTransactions.length} transactions found • Total: {formattedTotal}
             </p>
@@ -375,7 +374,7 @@ export function TransactionsList({ transactions }: { transactions: TransactionOu
                 <AnimatePresence>
                   {sortedTransactions.map((transaction, index) => {
                     const isExpanded = expandedTransaction === index
-                    const isPositive = Number.parseFloat(transaction.amount) > 0
+                    const isPositive = Number.parseFloat(transaction.amount) < 0
                     const formattedAmount = new Intl.NumberFormat("en-US", {
                       style: "currency",
                       currency: "USD",
@@ -459,7 +458,7 @@ export function TransactionsList({ transactions }: { transactions: TransactionOu
                               )}
                             >
                               {isPositive ? "+" : "-"}
-                              {formattedAmount}
+                              {formattedAmount} {transaction.currency}
                             </div>
                           </div>
                         </div>
@@ -528,7 +527,7 @@ export function TransactionsList({ transactions }: { transactions: TransactionOu
 export default function TransactionsPage({transactions}: { transactions: TransactionOutput[] }) {
   return (
     <div className="container mx-auto p-4">
-      <h1 className="mb-6 text-2xl font-bold text-neutral-900 dark:text-white">Financial Dashboard</h1>
+      <h1 className="mb-6 text-2xl font-bold text-neutral-900 dark:text-white">Lista De Transacciones</h1>
       <TransactionsList transactions={transactions} />
     </div>
   )
