@@ -179,7 +179,7 @@ export function TransactionsList({ transactions }: { transactions: TransactionOu
   }
 
   const totalAmount = sortedTransactions.reduce((sum, t) => sum + Number.parseFloat(t.amount), 0)
-  const formattedTotal = new Intl.NumberFormat("en-US", {
+  const formattedTotal = new Intl.NumberFormat("es-ES", {
     style: "currency",
     currency: "USD",
     minimumFractionDigits: 2,
@@ -375,7 +375,7 @@ export function TransactionsList({ transactions }: { transactions: TransactionOu
                   {sortedTransactions.map((transaction, index) => {
                     const isExpanded = expandedTransaction === index
                     const isPositive = Number.parseFloat(transaction.amount) < 0
-                    const formattedAmount = new Intl.NumberFormat("en-US", {
+                    const formattedAmount = new Intl.NumberFormat("es-ES", {
                       style: "currency",
                       currency: "USD",
                       minimumFractionDigits: 2,
