@@ -63,6 +63,7 @@ import {
 import { Input } from "~/components/ui/input";
 import { TransactionOutput } from "~/server/api/types";
 import { useDollarRate } from "~/hooks/use-currency-rate";
+import { formatCurrency } from "~/utils/pdf-extract";
 
 // Helper function for class names
 function cn(...inputs: (string | undefined | null | false | 0)[]) {
@@ -179,7 +180,7 @@ const dailyExpenses = [
 ];
 
 // Get category color
-const getCategoryColor = (category: string) => {
+const getCategoryColorPie = (category: string) => {
   const categories: Record<string, string> = {
     Comida: "#10B981", // verde esmeralda
     Transporte: "#3B82F6", // azul brillante
@@ -196,6 +197,23 @@ const getCategoryColor = (category: string) => {
   return categories[category] || "#6b7280";
 };
 
+const getCategoryColor = (category: string) => {
+  const categories: Record<string, string> = {
+    Food: "bg-emerald-100 text-emerald-800 dark:bg-emerald-900 dark:text-emerald-200",
+    Transport: "bg-blue-100 text-blue-800 dark:bg-blue-900 dark:text-blue-200",
+    Shopping: "bg-purple-100 text-purple-800 dark:bg-purple-900 dark:text-purple-200",
+    Entertainment: "bg-pink-100 text-pink-800 dark:bg-pink-900 dark:text-pink-200",
+    Bills: "bg-orange-100 text-orange-800 dark:bg-orange-900 dark:text-orange-200",
+    Health: "bg-red-100 text-red-800 dark:bg-red-900 dark:text-red-200",
+    Travel: "bg-indigo-100 text-indigo-800 dark:bg-indigo-900 dark:text-indigo-200",
+    Education: "bg-yellow-100 text-yellow-800 dark:bg-yellow-900 dark:text-yellow-200",
+    Income: "bg-green-100 text-green-800 dark:bg-green-900 dark:text-green-200",
+  }
+
+  return categories[category] || "bg-neutral-100 text-neutral-800 dark:bg-neutral-800 dark:text-neutral-200"
+}
+
+
 // Weekly comparison data for bar chart
 const weeklyComparison = [
   { name: "Week 1", expenses: 1500, income: 3500 },
@@ -207,10 +225,18 @@ const weeklyComparison = [
 // const balance = totalIncome - totalExpenses
 
 // Format currency
-const formatCurrency = (amount: number) => {
+const formatCurrencyUSD = (amount: number) => {
   return new Intl.NumberFormat("es-ES", {
     style: "currency",
     currency: "USD",
+    minimumFractionDigits: 2,
+  }).format(amount);
+};
+
+const formatCurrencyARS = (amount: number) => {
+  return new Intl.NumberFormat("es-ES", {
+    style: "currency",
+    currency: "ARS",
     minimumFractionDigits: 2,
   }).format(amount);
 };
@@ -254,7 +280,7 @@ export function Dashboard({
     return {
       name: category,
       value: total,
-      color: getCategoryColor(category),
+      color: getCategoryColorPie(category),
     };
   });
   // Calculate total expenses
@@ -344,10 +370,6 @@ export function Dashboard({
   return (
     <div className="flex min-h-screen w-full flex-col bg-gray-50 dark:bg-neutral-900">
       <header className="sticky top-0 z-10 flex h-16 items-center gap-4 border-b bg-white px-6 shadow-sm dark:border-neutral-700 dark:bg-neutral-800">
-        <div className="flex flex-1 items-center gap-2">
-          <WalletIcon className="h-6 w-6 text-blue-600" />
-          <h1 className="text-xl font-semibold">Dashboard</h1>
-        </div>
         <div className="flex items-center gap-4">
           <Select
             value={selectedTimeRange}
@@ -379,7 +401,7 @@ export function Dashboard({
             </CardHeader>
             <CardContent>
               <div className="text-2xl font-bold text-red-600">
-                {formatCurrency(totalExpensesUSD)}
+                {formatCurrencyUSD(totalExpensesUSD)}
               </div>
               <p className="text-xs text-gray-500">+12.5% from last month</p>
             </CardContent>
@@ -411,8 +433,7 @@ export function Dashboard({
               <div
                 className={`text-2xl font-bold ${balance >= 0 ? "text-green-600" : "text-red-600"}`}
               >
-                {/* {formatCurrency(totalExpenses)} */}
-                {/* si tengo gasto en dolares muestro el total aproximado en ars y sino tengo gasto en dolares solo muestro el total en ars */}
+                <p className="text-xs text-gray-500">Aproximado en ARS</p>
                 {totalExpensesUSD > 0
                   ? dollarRate !== undefined
                     ? formatCurrency(
@@ -421,7 +442,6 @@ export function Dashboard({
                     : "Cargando..."
                   : formatCurrency(totalExpenses)}
               </div>
-              <p className="text-xs text-gray-500">Aproximado en ARS</p>
               <p className="text-xs text-gray-500">
                 1 USD ={" "}
                 {dollarRate !== undefined
@@ -526,7 +546,7 @@ export function Dashboard({
                     {/* <div className="h-3 w-3 rounded-full" style={{ backgroundColor: category.color }} /> */}
                     <div
                       className="h-3 w-3 rounded-full"
-                      style={{ backgroundColor: getCategoryColor(category) }}
+                      style={{ backgroundColor: getCategoryColorPie(category) }}
                     />
                     <span className="text-xs">{category}</span>
                   </div>
@@ -535,8 +555,8 @@ export function Dashboard({
             </CardContent>
           </Card>
 
-          {/* Weekly Comparison Bar Chart */}
-          <Card className="col-span-full">
+          {/* Weekly Comparison Bar Chart WIP*/}
+          {/* <Card className="col-span-full">
             <CardHeader>
               <CardTitle>Weekly Comparison</CardTitle>
               <CardDescription>Income vs. Expenses by week</CardDescription>
@@ -595,7 +615,7 @@ export function Dashboard({
                 </ResponsiveContainer>
               </ChartContainer>
             </CardContent>
-          </Card>
+          </Card> */}
         </div>
 
         {/* Transactions Table */}
@@ -603,13 +623,13 @@ export function Dashboard({
           <Card>
             <CardHeader>
               <div className="flex items-center justify-between">
-                <CardTitle>Recent Transactions</CardTitle>
+                <CardTitle>Transacciones Recientes</CardTitle>
                 <div className="flex gap-2">
                   <div className="relative w-full sm:w-64">
                     <Search className="absolute top-1/2 left-3 h-4 w-4 -translate-y-1/2 text-gray-400" />
                     <Input
                       type="text"
-                      placeholder="Search transactions..."
+                      placeholder="Buscar Transacciones..."
                       value={searchTerm}
                       onChange={(e) => setSearchTerm(e.target.value)}
                       className="pl-9"
@@ -625,7 +645,7 @@ export function Dashboard({
                     )}
                   >
                     <Filter className="h-4 w-4" />
-                    <span className="hidden sm:inline">Filters</span>
+                    <span className="hidden sm:inline">Filtros</span>
                     {hasActiveFilters && (
                       <span className="ml-1 flex h-5 w-5 items-center justify-center rounded-full bg-blue-600 text-xs text-white">
                         {selectedCategories.length}
@@ -635,15 +655,15 @@ export function Dashboard({
                 </div>
               </div>
               <CardDescription>
-                Your most recent financial transactions
+                Tus transacciones financieras más recientes
               </CardDescription>
             </CardHeader>
 
             {/* Filters Panel */}
             {showFilters && (
-              <div className="border-t border-b border-gray-200 bg-gray-50 px-6 py-4">
+              <div className="border-t border-b border-gray-200 bg-gray-50 px-6 py-4 dark:border-neutral-700 dark:bg-neutral-800">
                 <div className="flex items-center justify-between">
-                  <h3 className="text-sm font-medium text-gray-700">Filters</h3>
+                  <h3 className="text-sm font-medium text-gray-700">Filtros</h3>
                   {hasActiveFilters && (
                     <Button
                       variant="ghost"
@@ -652,14 +672,14 @@ export function Dashboard({
                       className="h-8 px-2 text-xs"
                     >
                       <X className="mr-1 h-3 w-3" />
-                      Clear all
+                      Limpiar todos
                     </Button>
                   )}
                 </div>
 
                 <div className="mt-3">
-                  <h4 className="mb-2 text-xs font-medium text-gray-500">
-                    Categories
+                  <h4 className="mb-2 text-xs font-medium text-gray-500 dark:text-neutral-400">
+                    Categorías
                   </h4>
                   <div className="flex flex-wrap gap-2">
                     {uniqueCategories.map((category) => (
@@ -670,7 +690,7 @@ export function Dashboard({
                           "cursor-pointer",
                           selectedCategories.includes(category)
                             ? getCategoryColor(category)
-                            : "bg-white",
+                            : "dark:bg-neutral-700 dark:text-white",
                         )}
                         onClick={() => toggleCategory(category)}
                       >
@@ -694,7 +714,7 @@ export function Dashboard({
                           className="flex items-center gap-1 font-medium"
                           onClick={() => toggleSort("date")}
                         >
-                          Date
+                          Fecha
                           {sortBy === "date" &&
                             (sortDirection === "asc" ? (
                               <ChevronUp className="h-4 w-4" />
@@ -703,8 +723,8 @@ export function Dashboard({
                             ))}
                         </Button>
                       </TableHead>
-                      <TableHead>Description</TableHead>
-                      <TableHead>Category</TableHead>
+                      <TableHead>Descripción</TableHead>
+                      <TableHead>Categoría</TableHead>
                       <TableHead>
                         <Button
                           variant="ghost"
@@ -712,7 +732,7 @@ export function Dashboard({
                           className="flex items-center gap-1 font-medium"
                           onClick={() => toggleSort("amount")}
                         >
-                          Amount
+                          Monto
                           {sortBy === "amount" &&
                             (sortDirection === "asc" ? (
                               <ChevronUp className="h-4 w-4" />
@@ -733,7 +753,7 @@ export function Dashboard({
                     ) : (
                       paginatedTransactions.map((transaction) => {
                         const isIncome =
-                          Number.parseFloat(transaction.amount) > 0;
+                          Number.parseFloat(transaction.amount) < 0;
                         const formattedAmount = formatCurrency(
                           Math.abs(Number.parseFloat(transaction.amount)),
                         );
@@ -741,21 +761,21 @@ export function Dashboard({
                         return (
                           <TableRow
                             key={transaction.id}
-                            className="hover:bg-gray-50"
+                            className="hover:bg-gray-50 dark:hover:bg-neutral-800"
                           >
                             <TableCell className="font-medium">
                               {formatDate(transaction.date)}
                             </TableCell>
                             <TableCell>{transaction.description}</TableCell>
                             <TableCell>
-                              <Badge
-                                variant="outline"
-                                className={getCategoryColor(
-                                  transaction.category,
+                              <span
+                                className={cn(
+                                  "inline-flex items-center rounded-full border px-2 py-0.5 text-xs font-normal",
+                                  getCategoryColor(transaction.category),
                                 )}
                               >
                                 {transaction.category}
-                              </Badge>
+                              </span>
                             </TableCell>
                             <TableCell
                               className={
@@ -764,9 +784,9 @@ export function Dashboard({
                             >
                               <div className="flex items-center">
                                 {isIncome ? (
-                                  <ArrowDownLeft className="mr-1 h-4 w-4" />
-                                ) : (
                                   <ArrowUpRight className="mr-1 h-4 w-4" />
+                                ) : (
+                                <ArrowDownLeft className="mr-1 h-4 w-4" />
                                 )}
                                 {isIncome ? "+" : "-"}
                                 {formattedAmount}
@@ -800,7 +820,7 @@ export function Dashboard({
                       }
                       disabled={currentPage === 1}
                     >
-                      Previous
+                      Anterior
                     </Button>
                     <Button
                       variant="outline"
@@ -810,7 +830,7 @@ export function Dashboard({
                       }
                       disabled={currentPage === totalPages}
                     >
-                      Next
+                      Siguiente
                     </Button>
                   </div>
                 </div>
