@@ -171,7 +171,7 @@ export function TransactionsList({ transactions }: { transactions: TransactionOu
 
   const formatDate = (dateString: string) => {
     const date = new Date(dateString)
-    return new Intl.DateTimeFormat("es", {
+    return new Intl.DateTimeFormat("en-US", {
       month: "short",
       day: "numeric",
       year: "numeric",
@@ -179,7 +179,7 @@ export function TransactionsList({ transactions }: { transactions: TransactionOu
   }
 
   const totalAmount = sortedTransactions.reduce((sum, t) => sum + Number.parseFloat(t.amount), 0)
-  const formattedTotal = new Intl.NumberFormat("es-ES", {
+  const formattedTotal = new Intl.NumberFormat("en-US", {
     style: "currency",
     currency: "USD",
     minimumFractionDigits: 2,
@@ -375,7 +375,7 @@ export function TransactionsList({ transactions }: { transactions: TransactionOu
                   {sortedTransactions.map((transaction, index) => {
                     const isExpanded = expandedTransaction === index
                     const isPositive = Number.parseFloat(transaction.amount) < 0
-                    const formattedAmount = new Intl.NumberFormat("es-ES", {
+                    const formattedAmount = new Intl.NumberFormat("en-US", {
                       style: "currency",
                       currency: "USD",
                       minimumFractionDigits: 2,
