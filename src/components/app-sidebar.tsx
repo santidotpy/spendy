@@ -2,17 +2,12 @@
 
 import * as React from "react"
 import {
-  AudioWaveform,
-  BookOpen,
   Bot,
-  Command,
-  Frame,
-  GalleryVerticalEnd,
-  Map,
   PieChart,
   Settings2,
   SquareTerminal,
   FileUp,
+  Files,
   Banknote,
   BadgeDollarSign,
   DollarSign,
@@ -160,6 +155,11 @@ const data = {
       url: "/dashboard/upload",
       icon: FileUp,
     },
+    {
+      name: "Lista de resumenes",
+      url: "/dashboard/statements",
+      icon: Files,
+    },
   ],
 }
 
@@ -167,10 +167,10 @@ export function AppSidebar({ ...props }: React.ComponentProps<typeof Sidebar>) {
   return (
     <Sidebar collapsible="icon" {...props}>
       <SidebarHeader>
-        <TeamSwitcher teams={data.teams} />
+        {/* <TeamSwitcher teams={data.teams} /> */}
       </SidebarHeader>
       <SidebarContent>
-        <NavMain items={data.navMain} />
+        {/* <NavMain items={data.navMain} /> */}
         <NavProjects projects={data.projects} />
       </SidebarContent>
       <SidebarFooter>
