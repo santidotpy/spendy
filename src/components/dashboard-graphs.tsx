@@ -15,6 +15,7 @@ import {
   Tooltip,
   ResponsiveContainer,
   Legend,
+  Label,
 } from "recharts";
 import {
   ArrowDownIcon,
@@ -29,6 +30,7 @@ import {
   WalletIcon,
   TrendingUpIcon,
   TrendingDownIcon,
+  TrendingUp,
 } from "lucide-react";
 
 import {
@@ -37,6 +39,7 @@ import {
   CardDescription,
   CardHeader,
   CardTitle,
+  CardFooter,
 } from "~/components/ui/card";
 import { Button } from "~/components/ui/button";
 import {
@@ -59,6 +62,7 @@ import {
   ChartContainer,
   ChartTooltip,
   ChartTooltipContent,
+  ChartConfig,
 } from "~/components/ui/chart";
 import { Input } from "~/components/ui/input";
 import { TransactionOutput } from "~/server/api/types";
@@ -70,6 +74,44 @@ function cn(...inputs: (string | undefined | null | false | 0)[]) {
   return inputs.filter(Boolean).join(" ");
 }
 
+const chartConfig = {
+  amount: {
+    label: "Amount",
+  },
+  comida: {
+    label: "Comida",
+    color: "hsl(var(--chart-1))",
+  },
+  transporte: {
+    label: "Transporte",
+    color: "hsl(var(--chart-2))",
+  },
+  utilities: {
+    label: "Utilities",
+    color: "hsl(var(--chart-3))",
+  },
+  entertainment: {
+    label: "Entertainment",
+    color: "hsl(var(--chart-4))",
+  },
+  health: {
+    label: "Health",
+    color: "hsl(var(--chart-5))",
+  },
+  shopping: {
+    label: "Shopping",
+    color: "hsl(var(--chart-6))",
+  },
+  housing: {
+    label: "Housing",
+    color: "hsl(var(--chart-7))",
+  },
+  other: {
+    label: "Other",
+    color: "hsl(var(--chart-8))",
+  },
+} satisfies ChartConfig;
+
 // Mock data for the dashboard
 const timeRanges = [
   "Last 30 Days",
@@ -78,90 +120,6 @@ const timeRanges = [
   "This Quarter",
   "This Year",
   "Custom",
-];
-
-// Mock transaction data
-const transactions = [
-  {
-    id: 1,
-    date: "2023-09-30",
-    description: "Supermercado El Corte",
-    amount: "-85.20",
-    category: "Food",
-    currency: "USD",
-  },
-  {
-    id: 2,
-    date: "2023-09-28",
-    description: "Netflix",
-    amount: "-12.99",
-    category: "Subscriptions",
-    currency: "USD",
-  },
-  {
-    id: 3,
-    date: "2023-09-27",
-    description: "Uber",
-    amount: "-24.50",
-    category: "Transport",
-    currency: "USD",
-  },
-  {
-    id: 4,
-    date: "2023-09-25",
-    description: "Salary Deposit",
-    amount: "3500.00",
-    category: "Income",
-    currency: "USD",
-  },
-  {
-    id: 5,
-    date: "2023-09-23",
-    description: "Cine Cinesa",
-    amount: "-18.00",
-    category: "Entertainment",
-    currency: "USD",
-  },
-  {
-    id: 6,
-    date: "2023-09-20",
-    description: "Farmacia",
-    amount: "-32.40",
-    category: "Health",
-    currency: "USD",
-  },
-  {
-    id: 7,
-    date: "2023-09-18",
-    description: "Amazon Prime",
-    amount: "-9.99",
-    category: "Subscriptions",
-    currency: "USD",
-  },
-  {
-    id: 8,
-    date: "2023-09-15",
-    description: "Gasolina Repsol",
-    amount: "-60.00",
-    category: "Transport",
-    currency: "USD",
-  },
-  {
-    id: 9,
-    date: "2023-09-10",
-    description: "Freelance Payment",
-    amount: "850.00",
-    category: "Income",
-    currency: "USD",
-  },
-  {
-    id: 10,
-    date: "2023-09-05",
-    description: "Rent Payment",
-    amount: "-1200.00",
-    category: "Housing",
-    currency: "USD",
-  },
 ];
 
 // Daily expenses data for line chart
@@ -201,18 +159,25 @@ const getCategoryColor = (category: string) => {
   const categories: Record<string, string> = {
     Food: "bg-emerald-100 text-emerald-800 dark:bg-emerald-900 dark:text-emerald-200",
     Transport: "bg-blue-100 text-blue-800 dark:bg-blue-900 dark:text-blue-200",
-    Shopping: "bg-purple-100 text-purple-800 dark:bg-purple-900 dark:text-purple-200",
-    Entertainment: "bg-pink-100 text-pink-800 dark:bg-pink-900 dark:text-pink-200",
-    Bills: "bg-orange-100 text-orange-800 dark:bg-orange-900 dark:text-orange-200",
+    Shopping:
+      "bg-purple-100 text-purple-800 dark:bg-purple-900 dark:text-purple-200",
+    Entertainment:
+      "bg-pink-100 text-pink-800 dark:bg-pink-900 dark:text-pink-200",
+    Bills:
+      "bg-orange-100 text-orange-800 dark:bg-orange-900 dark:text-orange-200",
     Health: "bg-red-100 text-red-800 dark:bg-red-900 dark:text-red-200",
-    Travel: "bg-indigo-100 text-indigo-800 dark:bg-indigo-900 dark:text-indigo-200",
-    Education: "bg-yellow-100 text-yellow-800 dark:bg-yellow-900 dark:text-yellow-200",
+    Travel:
+      "bg-indigo-100 text-indigo-800 dark:bg-indigo-900 dark:text-indigo-200",
+    Education:
+      "bg-yellow-100 text-yellow-800 dark:bg-yellow-900 dark:text-yellow-200",
     Income: "bg-green-100 text-green-800 dark:bg-green-900 dark:text-green-200",
-  }
+  };
 
-  return categories[category] || "bg-neutral-100 text-neutral-800 dark:bg-neutral-800 dark:text-neutral-200"
-}
-
+  return (
+    categories[category] ||
+    "bg-neutral-100 text-neutral-800 dark:bg-neutral-800 dark:text-neutral-200"
+  );
+};
 
 // Weekly comparison data for bar chart
 const weeklyComparison = [
@@ -280,9 +245,10 @@ export function Dashboard({
     return {
       name: category,
       value: total,
-      color: getCategoryColorPie(category),
+      fill: getCategoryColorPie(category),
     };
   });
+
   // Calculate total expenses
   const totalExpenses = transactions
     .filter((t) => Number.parseFloat(t.amount) > 0)
@@ -313,6 +279,37 @@ export function Dashboard({
     setSelectedCategories([]);
     setSearchTerm("");
   };
+
+  const showPercentage = (value: number, total: number) => {
+    return ((value / total) * 100).toFixed(0);
+  };
+
+  function CustomTooltipContent({ payload }: { payload?: any[] }) {
+    if (!payload || payload.length === 0) return null;
+
+    const { name, value } = payload[0];
+    const percentage = showPercentage(value, totalExpenses);
+
+    return (
+      <div className="bg-background rounded-md border p-2 shadow-sm">
+        {/* <div className={cn("font-medium", labelClassName)}>
+          {labelFormatter(value, payload)}
+        </div> */}
+        <div className="text-foreground text-sm font-medium">{name}</div>
+        <div className="text-muted-foreground text-sm">
+          ${value.toLocaleString()} ({percentage}%)
+        </div>
+      </div>
+    );
+  }
+
+  const monthlyExpenses = transactions.map((t) => {
+    const date = new Date(t.date);
+    return {
+      date: date.toLocaleString("default", { month: "long" }),
+      amount: Number.parseFloat(t.amount),
+    };
+  });
 
   // Check if any filters are active
   const hasActiveFilters = selectedCategories.length > 0 || searchTerm;
@@ -369,26 +366,6 @@ export function Dashboard({
 
   return (
     <div className="flex min-h-screen w-full flex-col bg-gray-50 dark:bg-neutral-900">
-      <header className="sticky top-0 z-10 flex h-16 items-center gap-4 border-b bg-white px-6 shadow-sm dark:border-neutral-700 dark:bg-neutral-800">
-        <div className="flex items-center gap-4">
-          <Select
-            value={selectedTimeRange}
-            onValueChange={setSelectedTimeRange}
-          >
-            <SelectTrigger className="w-[180px]">
-              <SelectValue placeholder="Select time range" />
-            </SelectTrigger>
-            <SelectContent>
-              {timeRanges.map((range) => (
-                <SelectItem key={range} value={range}>
-                  {range}
-                </SelectItem>
-              ))}
-            </SelectContent>
-          </Select>
-        </div>
-      </header>
-
       <main className="flex-1 p-6">
         {/* Summary Cards */}
         <div className="grid gap-6 md:grid-cols-2 lg:grid-cols-3">
@@ -403,7 +380,7 @@ export function Dashboard({
               <div className="text-2xl font-bold text-red-600">
                 {formatCurrencyUSD(totalExpensesUSD)}
               </div>
-              <p className="text-xs text-gray-500">+12.5% from last month</p>
+              {/* <p className="text-xs text-gray-500">+12.5% from last month</p> */}
             </CardContent>
           </Card>
           <Card>
@@ -417,7 +394,7 @@ export function Dashboard({
               <div className="text-2xl font-bold text-red-600">
                 {formatCurrency(totalExpenses)}
               </div>
-              <p className="text-xs text-gray-500">+5.2% from last month</p>
+              {/* <p className="text-xs text-gray-500">+5.2% from last month</p> */}
             </CardContent>
           </Card>
           <Card>
@@ -454,90 +431,174 @@ export function Dashboard({
 
         {/* Charts Section */}
         <div className="mt-6 grid gap-6 md:grid-cols-2 lg:grid-cols-3">
-          {/* Daily Expenses Line Chart */}
+          {/* Monthly Spendings Bar Chart (USD vs ARS) */}
           <Card className="col-span-full lg:col-span-2">
             <CardHeader>
-              <CardTitle>Daily Expenses Over Time</CardTitle>
-              <CardDescription>
-                Track your spending patterns over the last 30 days
-              </CardDescription>
+              <CardTitle>Gastos mensuales por moneda</CardTitle>
+              <CardDescription>Últimos 6 meses</CardDescription>
             </CardHeader>
             <CardContent>
               <ChartContainer
                 config={{
-                  amount: {
-                    label: "Amount",
-                    color: "hsl(var(--chart-1))",
-                  },
+                  usd: { label: "USD", color: "#85BB65" },
+                  ars: { label: "ARS", color: "#1DA1F2" },
                 }}
                 className="aspect-[4/3] w-full sm:aspect-[2/1]"
               >
-                <ResponsiveContainer width="100%" height="100%">
-                  <LineChart
-                    data={dailyExpenses}
-                    margin={{ top: 5, right: 10, left: 0, bottom: 5 }}
-                  >
-                    <CartesianGrid strokeDasharray="3 3" stroke="#f1f5f9" />
-                    <XAxis
-                      dataKey="date"
-                      stroke="#94a3b8"
-                      fontSize={12}
-                      tickLine={false}
-                      axisLine={false}
-                    />
-                    <YAxis
-                      stroke="#94a3b8"
-                      fontSize={12}
-                      tickLine={false}
-                      axisLine={false}
-                      tickFormatter={(value) => `$${Math.abs(value)}`}
-                    />
-                    <ChartTooltip content={<ChartTooltipContent />} />
-                    <Line
-                      type="monotone"
-                      dataKey="amount"
-                      stroke="var(--color-amount)"
-                      strokeWidth={2}
-                      dot={{ r: 4 }}
-                      activeDot={{ r: 6 }}
-                    />
-                  </LineChart>
-                </ResponsiveContainer>
+                <BarChart
+                  accessibilityLayer
+                  data={(() => {
+                    const monthly: Record<
+                      string,
+                      { usd: number; ars: number }
+                    > = {};
+
+                    transactions.forEach((t) => {
+                      if (Number.parseFloat(t.amount) > 0) {
+                        const date = new Date(t.date);
+                        const key = `${date.getFullYear()}-${String(
+                          date.getMonth() + 1,
+                        ).padStart(2, "0")}`;
+                        if (!monthly[key]) monthly[key] = { usd: 0, ars: 0 };
+                        if (t.currency === "USD") {
+                          monthly[key].usd += Math.abs(
+                            Number.parseFloat(t.amount),
+                          );
+                        } else if (t.currency === "ARS") {
+                          monthly[key].ars += Math.abs(
+                            Number.parseFloat(t.amount),
+                          );
+                        }
+                      }
+                    });
+
+                    const result = Object.entries(monthly)
+                      .map(([key, vals]) => {
+                        const [year, month] = key.split("-");
+                        const date = new Date(Number(year), Number(month) - 1); // -1 porque los meses son 0-11
+                        return {
+                          month: date.toLocaleString("default", {
+                            month: "short",
+                            year: "numeric",
+                          }),
+                          sortKey: key,
+                          ...vals,
+                          date,
+                        };
+                      })
+                      .sort((a, b) => a.sortKey.localeCompare(b.sortKey));
+
+                    const sixMonthsAgo = new Date();
+                    sixMonthsAgo.setMonth(sixMonthsAgo.getMonth() - 5);
+
+                    return result.filter((entry) => entry.date >= sixMonthsAgo);
+                  })()}
+                  margin={{ top: 5, right: 10, left: 0, bottom: 5 }}
+                >
+                  <CartesianGrid vertical={false} stroke="#f1f5f9" />
+                  <XAxis
+                    dataKey="month"
+                    tickLine={false}
+                    axisLine={false}
+                    tickMargin={10}
+                    stroke="#94a3b8"
+                    fontSize={12}
+                    tickFormatter={(value) => value.slice(0, 3)}
+                  />
+                  <YAxis
+                    stroke="#94a3b8"
+                    fontSize={12}
+                    tickLine={false}
+                    axisLine={false}
+                    tickFormatter={(value) => `$${value}`}
+                  />
+                  <ChartTooltip
+                    cursor={false}
+                    content={<ChartTooltipContent indicator="dashed" />}
+                  />
+                  <Legend />
+                  <Bar dataKey="usd" fill="#85BB65" radius={4} name="USD" />
+                  <Bar dataKey="ars" fill="#1DA1F2" radius={4} name="ARS" />
+                </BarChart>
               </ChartContainer>
             </CardContent>
+            <CardFooter className="flex-col items-start gap-2 text-sm">
+              <div className="flex gap-2 leading-none font-medium">
+                Gastos totales en aumento este mes
+                <TrendingUp className="h-4 w-4" />
+              </div>
+              <div className="text-muted-foreground leading-none">
+                Mostrando gastos de los últimos 6 meses
+              </div>
+            </CardFooter>
           </Card>
 
           {/* Spending by Category Pie Chart */}
           <Card>
             <CardHeader>
-              <CardTitle>Spending by Category</CardTitle>
+              <CardTitle>Gastos por Categoría</CardTitle>
               <CardDescription>
-                Distribution of expenses by category
+                Distribución de gastos por categoría
               </CardDescription>
             </CardHeader>
             <CardContent>
               <div className="h-[300px]">
                 <ResponsiveContainer width="100%" height="100%">
-                  <PieChart>
-                    <Pie
-                      data={categoryExpenses}
-                      cx="50%"
-                      cy="50%"
-                      labelLine={false}
-                      outerRadius={80}
-                      fill="#8884d8"
-                      dataKey="value"
-                      label={({ name, percent }) =>
-                        `${name} ${(percent * 100).toFixed(0)}%`
-                      }
-                      //   label={({ name, percent }) => `${name} ${(percent * 100).toFixed(0)}%`}
-                    >
-                      {categoryExpenses.map((entry, index) => (
-                        <Cell key={`cell-${index}`} fill={entry.color} />
-                      ))}
-                    </Pie>
-                    <Tooltip formatter={(value: number) => formatCurrency(value)} />
-                  </PieChart>
+                  {/* TODO: que todas los consumos esten en ARS */}
+                  <ChartContainer
+                    config={chartConfig}
+                    className="mx-auto aspect-square max-h-[250px]"
+                  >
+                    <PieChart>
+                      <ChartTooltip
+                        cursor={false}
+                        content={<CustomTooltipContent />}
+                      />
+                      <Pie
+                        data={categoryExpenses}
+                        dataKey="value"
+                        nameKey="name"
+                        innerRadius={60}
+                        strokeWidth={5}
+                      >
+                        <Label
+                          content={({ viewBox }) => {
+                            if (viewBox && "cx" in viewBox && "cy" in viewBox) {
+                              return (
+                                <text
+                                  x={viewBox.cx}
+                                  y={viewBox.cy}
+                                  textAnchor="middle"
+                                  dominantBaseline="middle"
+                                >
+                                  <tspan
+                                    x={viewBox.cx}
+                                    y={viewBox.cy}
+                                    className="fill-foreground text-center text-sm font-bold"
+                                  >
+                                    {/* categoria mas alta */}
+                                    {
+                                      categoryExpenses.reduce((max, cat) =>
+                                        cat.value > max.value ? cat : max,
+                                      ).name
+                                    }
+                                  </tspan>
+                                  <tspan
+                                    x={viewBox.cx}
+                                    y={(viewBox.cy || 0) + 24}
+                                    className="fill-muted-foreground text-xs"
+                                  >
+                                    {/* {totalExpenses.toLocaleString()} */}
+                                    Mayor consumo
+                                  </tspan>
+                                </text>
+                              );
+                            }
+                          }}
+                        />
+                      </Pie>
+                    </PieChart>
+                  </ChartContainer>
                 </ResponsiveContainer>
               </div>
               <div className="mt-4 grid grid-cols-2 gap-2">
@@ -554,68 +615,6 @@ export function Dashboard({
               </div>
             </CardContent>
           </Card>
-
-          {/* Weekly Comparison Bar Chart WIP*/}
-          {/* <Card className="col-span-full">
-            <CardHeader>
-              <CardTitle>Weekly Comparison</CardTitle>
-              <CardDescription>Income vs. Expenses by week</CardDescription>
-            </CardHeader>
-            <CardContent>
-              <ChartContainer
-                config={{
-                  expenses: {
-                    label: "Expenses",
-                    color: "hsl(var(--chart-2))",
-                  },
-                  income: {
-                    label: "Income",
-                    color: "hsl(var(--chart-3))",
-                  },
-                }}
-                className="aspect-[4/3] w-full sm:aspect-[3/1]"
-              >
-                <ResponsiveContainer width="100%" height="100%">
-                  <BarChart
-                    data={weeklyComparison}
-                    margin={{ top: 5, right: 10, left: 0, bottom: 5 }}
-                  >
-                    <CartesianGrid
-                      strokeDasharray="3 3"
-                      stroke="#f1f5f9"
-                      vertical={false}
-                    />
-                    <XAxis
-                      dataKey="name"
-                      stroke="#94a3b8"
-                      fontSize={12}
-                      tickLine={false}
-                      axisLine={false}
-                    />
-                    <YAxis
-                      stroke="#94a3b8"
-                      fontSize={12}
-                      tickLine={false}
-                      axisLine={false}
-                      tickFormatter={(value) => `$${value}`}
-                    />
-                    <ChartTooltip content={<ChartTooltipContent />} />
-                    <Legend />
-                    <Bar
-                      dataKey="expenses"
-                      fill="var(--color-expenses)"
-                      radius={[4, 4, 0, 0]}
-                    />
-                    <Bar
-                      dataKey="income"
-                      fill="var(--color-income)"
-                      radius={[4, 4, 0, 0]}
-                    />
-                  </BarChart>
-                </ResponsiveContainer>
-              </ChartContainer>
-            </CardContent>
-          </Card> */}
         </div>
 
         {/* Transactions Table */}
@@ -786,7 +785,7 @@ export function Dashboard({
                                 {isIncome ? (
                                   <ArrowUpRight className="mr-1 h-4 w-4" />
                                 ) : (
-                                <ArrowDownLeft className="mr-1 h-4 w-4" />
+                                  <ArrowDownLeft className="mr-1 h-4 w-4" />
                                 )}
                                 {isIncome ? "+" : "-"}
                                 {formattedAmount}
