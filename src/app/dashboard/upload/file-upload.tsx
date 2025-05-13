@@ -17,7 +17,10 @@ import { TransactionsList } from "~/app/_components/transactions-list";
 import { usePDFJS } from "~/hooks/use-pdftext";
 import * as PDFJS from "pdfjs-dist/types/src/pdf";
 import type { TransactionOutput } from "~/server/types";
-
+import { Switch } from "~/components/ui/switch";
+import { Label } from "~/components/ui/label";
+import { Sparkles } from "lucide-react";
+import { Badge } from "~/components/ui/badge";
 const MAX_RETRY_AMOUNT = 3;
 
 export function FileUpload() {
@@ -29,7 +32,7 @@ export function FileUpload() {
   );
   const [selectedProvider, setSelectedProvider] = useState<string | null>(null);
   const [selectedModel, setSelectedModel] = useState<string>("");
-
+  const [useAI, setUseAI] = useState(true);
   const pdfjs = useRef<typeof PDFJS | null>(null);
   usePDFJS(async (pdfjsLib) => {
     setIsPdfLibReady(true);
@@ -167,37 +170,21 @@ export function FileUpload() {
       console.log("Selected model:", selectedModel);
     }
   };
-  
 
   return (
     <div className="w-full">
-      <div className="mb-4 flex items-center justify-between">
-        <Select
-          onValueChange={(value) => handleModelChange(value)}
-          value={selectedModel}
-        >
-          <SelectTrigger className="w-[300px]">
-            <SelectValue placeholder="Seleccioná un modelo IA" />
-          </SelectTrigger>
-          <SelectContent>
-            {Array.from(new Set(AI_MODELS.map((m) => m.provider))).map(
-              (provider) => (
-                <div key={provider}>
-                  <div className="text-muted-foreground px-2 py-1 text-xs tracking-wide uppercase">
-                    {provider}
-                  </div>
-                  {AI_MODELS.filter((m) => m.provider === provider).map(
-                    (model) => (
-                      <SelectItem key={model.id} value={model.id}>
-                        {model.label}
-                      </SelectItem>
-                    ),
-                  )}
-                </div>
-              ),
+      <div className="mb-4 flex items-center space-x-4 p-3 sm:mb-0">
+        <Switch id="ai-extraction" checked={useAI} onCheckedChange={setUseAI} />
+        <div className="flex items-center gap-2">
+          <Label htmlFor="ai-extraction" className="font-medium">
+            {useAI ? "Extraccion con IA" : "Extraccion sin IA"}
+            {useAI && (
+              <Badge className="flex items-center gap-1 bg-purple-600 text-white hover:bg-purple-700">
+                <Sparkles className="h-3.5 w-3.5" />
+              </Badge>
             )}
-          </SelectContent>
-        </Select>
+          </Label>
+        </div>
       </div>
       <div
         {...getRootProps()}
