@@ -187,19 +187,19 @@ export function TransactionsList({ transactions }: { transactions: TransactionOu
   }).format(totalAmount)
 
   return (
-    <div className="mt-6 overflow-hidden rounded-xl border-none bg-gradient-to-br from-neutral-50 to-neutral-100 shadow-xl dark:from-neutral-900 dark:to-neutral-800">
+    <div className="mt-4 sm:mt-6 overflow-hidden rounded-xl border-none bg-gradient-to-br from-neutral-50 to-neutral-100 shadow-xl dark:from-neutral-900 dark:to-neutral-800">
       {/* Card Header */}
-      <div className="border-b border-neutral-200 bg-white px-6 py-4 dark:border-neutral-700 dark:bg-neutral-900">
-        <div className="flex flex-col space-y-3 sm:flex-row sm:items-center sm:justify-between sm:space-y-0">
+      <div className="border-b border-neutral-200 bg-white px-2 py-3 sm:px-6 sm:py-4 dark:border-neutral-700 dark:bg-neutral-900">
+        <div className="flex flex-col gap-3 sm:flex-row sm:items-center sm:justify-between sm:gap-0">
           <div>
-            <h2 className="text-xl font-semibold tracking-tight text-neutral-900 dark:text-white">Transacciones</h2>
-            <p className="mt-1 text-sm text-neutral-500 dark:text-neutral-400">
+            <h2 className="text-lg sm:text-xl font-semibold tracking-tight text-neutral-900 dark:text-white">Transacciones</h2>
+            <p className="mt-1 text-xs sm:text-sm text-neutral-500 dark:text-neutral-400">
               {sortedTransactions.length} transactions found • Total: {formattedTotal}
             </p>
           </div>
-          <div className="flex gap-2">
+          <div className="flex flex-col gap-2 sm:flex-row sm:gap-2 w-full sm:w-auto">
             <div className="relative w-full sm:w-64">
-              <Search className="absolute left-3 top-1/2 h-4 w-4 -tranneutral-y-1/2 text-neutral-400" />
+              <Search className="absolute left-3 top-1/2 h-4 w-4 -translate-y-1/2 text-neutral-400" />
               <input
                 type="text"
                 placeholder="Search transactions..."
@@ -211,12 +211,12 @@ export function TransactionsList({ transactions }: { transactions: TransactionOu
             <button
               onClick={() => setShowFilters(!showFilters)}
               className={cn(
-                "flex items-center gap-1 rounded-md border border-neutral-200 bg-white px-3 py-2 text-sm font-medium text-neutral-700 transition-colors hover:bg-neutral-50 dark:border-neutral-700 dark:bg-neutral-800 dark:text-neutral-200 dark:hover:bg-neutral-700",
+                "flex items-center gap-1 rounded-md border border-neutral-200 bg-white px-3 py-2 text-sm font-medium text-neutral-700 transition-colors hover:bg-neutral-50 dark:border-neutral-700 dark:bg-neutral-800 dark:text-neutral-200 dark:hover:bg-neutral-700 w-full sm:w-auto justify-center",
                 showFilters && "bg-neutral-100 dark:bg-neutral-700",
               )}
             >
               <Filter className="h-4 w-4" />
-              <span className="hidden sm:inline">Filters</span>
+              <span className="inline sm:inline">Filters</span>
               {hasActiveFilters && (
                 <span className="ml-1 flex h-5 w-5 items-center justify-center rounded-full bg-neutral-700 text-xs text-white dark:bg-neutral-200 dark:text-neutral-800">
                   {(selectedCategories.length > 0 ? 1 : 0) + (startDate || endDate ? 1 : 0)}
@@ -236,8 +236,8 @@ export function TransactionsList({ transactions }: { transactions: TransactionOu
             exit={{ height: 0, opacity: 0 }}
             className="border-b border-neutral-200 bg-neutral-50 dark:border-neutral-700 dark:bg-neutral-800/50"
           >
-            <div className="p-4">
-              <div className="flex items-center justify-between">
+            <div className="p-2 sm:p-4">
+              <div className="flex flex-col gap-2 sm:flex-row sm:items-center sm:justify-between">
                 <h3 className="text-sm font-medium text-neutral-700 dark:text-neutral-300">Filters</h3>
                 {hasActiveFilters && (
                   <button
@@ -254,7 +254,7 @@ export function TransactionsList({ transactions }: { transactions: TransactionOu
                 {/* Date Range Filter */}
                 <div>
                   <h4 className="mb-2 text-xs font-medium text-neutral-500 dark:text-neutral-400">Date Range</h4>
-                  <div className="flex gap-2">
+                  <div className="flex flex-col gap-2 sm:flex-row">
                     <div className="w-full">
                       <DatePicker
                         ref={startDatePickerRef}
@@ -296,13 +296,13 @@ export function TransactionsList({ transactions }: { transactions: TransactionOu
       </AnimatePresence>
 
       {/* Tabs */}
-      <div className="w-full">
-        <div className="border-b border-neutral-200 bg-neutral-50 px-6 dark:border-neutral-700 dark:bg-neutral-800/50">
-          <div className="flex h-12 space-x-1">
+      <div className="w-full overflow-x-auto">
+        <div className="border-b border-neutral-200 bg-neutral-50 px-2 sm:px-6 dark:border-neutral-700 dark:bg-neutral-800/50">
+          <div className="flex h-10 sm:h-12 space-x-1 min-w-[320px] sm:min-w-0">
             <button
               onClick={() => setActiveTab("all")}
               className={cn(
-                "rounded-md px-3 py-2 text-sm font-medium transition-colors",
+                "rounded-md px-2 py-1 sm:px-3 sm:py-2 text-xs sm:text-sm font-medium transition-colors",
                 activeTab === "all"
                   ? "bg-white shadow-sm dark:bg-neutral-800"
                   : "text-neutral-600 hover:bg-neutral-100 hover:text-neutral-900 dark:text-neutral-400 dark:hover:bg-neutral-800/60 dark:hover:text-neutral-300",
@@ -313,7 +313,7 @@ export function TransactionsList({ transactions }: { transactions: TransactionOu
             <button
               onClick={() => setActiveTab("income")}
               className={cn(
-                "rounded-md px-3 py-2 text-sm font-medium transition-colors",
+                "rounded-md px-2 py-1 sm:px-3 sm:py-2 text-xs sm:text-sm font-medium transition-colors",
                 activeTab === "income"
                   ? "bg-white shadow-sm dark:bg-neutral-800"
                   : "text-neutral-600 hover:bg-neutral-100 hover:text-neutral-900 dark:text-neutral-400 dark:hover:bg-neutral-800/60 dark:hover:text-neutral-300",
@@ -324,7 +324,7 @@ export function TransactionsList({ transactions }: { transactions: TransactionOu
             <button
               onClick={() => setActiveTab("expenses")}
               className={cn(
-                "rounded-md px-3 py-2 text-sm font-medium transition-colors",
+                "rounded-md px-2 py-1 sm:px-3 sm:py-2 text-xs sm:text-sm font-medium transition-colors",
                 activeTab === "expenses"
                   ? "bg-white shadow-sm dark:bg-neutral-800"
                   : "text-neutral-600 hover:bg-neutral-100 hover:text-neutral-900 dark:text-neutral-400 dark:hover:bg-neutral-800/60 dark:hover:text-neutral-300",
@@ -338,7 +338,7 @@ export function TransactionsList({ transactions }: { transactions: TransactionOu
         {/* Tab Content */}
         <div>
           <div className="p-0">
-            <div className="flex items-center justify-between border-b border-neutral-200 bg-white px-6 py-3 text-sm font-medium text-neutral-500 dark:border-neutral-700 dark:bg-neutral-900 dark:text-neutral-400">
+            <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-2 border-b border-neutral-200 bg-white px-2 py-2 sm:px-6 sm:py-3 text-xs sm:text-sm font-medium text-neutral-500 dark:border-neutral-700 dark:bg-neutral-900 dark:text-neutral-400">
               <button
                 className="flex items-center gap-1 rounded-md px-2 py-1 font-medium hover:bg-neutral-100 dark:hover:bg-neutral-800"
                 onClick={() => toggleSort("date")}
@@ -358,12 +358,12 @@ export function TransactionsList({ transactions }: { transactions: TransactionOu
             </div>
 
             {sortedTransactions.length === 0 ? (
-              <div className="p-6 text-center">
-                <p className="text-neutral-500 dark:text-neutral-400">No {activeTab} transactions found</p>
+              <div className="p-4 sm:p-6 text-center">
+                <div className="text-neutral-500 dark:text-neutral-400">No {activeTab} transactions found</div>
                 {hasActiveFilters && (
                   <button
                     onClick={clearFilters}
-                    className="mt-2 rounded-md bg-neutral-100 px-3 py-1 text-sm font-medium text-neutral-700 hover:bg-neutral-200 dark:bg-neutral-800 dark:text-neutral-300 dark:hover:bg-neutral-700"
+                    className="mt-2 rounded-md bg-neutral-100 px-3 py-1 text-xs sm:text-sm font-medium text-neutral-700 hover:bg-neutral-200 dark:bg-neutral-800 dark:text-neutral-300 dark:hover:bg-neutral-700"
                   >
                     Clear filters
                   </button>
@@ -395,11 +395,11 @@ export function TransactionsList({ transactions }: { transactions: TransactionOu
                         )}
                         onClick={() => setExpandedTransaction(isExpanded ? null : index)}
                       >
-                        <div className="flex items-center justify-between px-6 py-4">
-                          <div className="flex items-center gap-4">
+                        <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-2 px-2 py-3 sm:px-6 sm:py-4">
+                          <div className="flex flex-row sm:flex-row items-start sm:items-center gap-2 sm:gap-4 w-full sm:w-auto">
                             <div
                               className={cn(
-                                "flex h-10 w-10 items-center justify-center rounded-full",
+                                "flex h-10 w-10 items-center justify-center rounded-full shrink-0",
                                 isPositive
                                   ? "bg-green-100 text-green-600 dark:bg-green-900/30 dark:text-green-400"
                                   : "bg-red-100 text-red-600 dark:bg-red-900/30 dark:text-red-400",
@@ -412,13 +412,13 @@ export function TransactionsList({ transactions }: { transactions: TransactionOu
                               )}
                             </div>
 
-                            <div>
-                              <h4 className="font-medium text-neutral-900 dark:text-white">
+                            <div className="flex flex-col gap-1 min-w-0">
+                              <h4 className="font-medium text-sm sm:text-base text-neutral-900 dark:text-white truncate max-w-[180px] sm:max-w-xs">
                                 {transaction.description.length > 30
                                   ? `${transaction.description.substring(0, 30)}...`
                                   : transaction.description}
                               </h4>
-                              <div className="mt-1 flex items-center gap-2 text-xs text-neutral-500 dark:text-neutral-400">
+                              <div className="mt-1 flex flex-wrap items-center gap-2 text-xs text-neutral-500 dark:text-neutral-400">
                                 <span className="flex items-center gap-1">
                                   <Calendar className="h-3 w-3" />
                                   {formatDate(transaction.date)}
@@ -431,29 +431,24 @@ export function TransactionsList({ transactions }: { transactions: TransactionOu
                                 >
                                   {transaction.category}
                                 </span>
-                                {/* {transaction.isInstallment && (
-                                  <span className="inline-flex items-center rounded-full bg-neutral-100 px-2 py-0.5 text-xs font-normal text-neutral-700 dark:bg-neutral-800 dark:text-neutral-300">
-                                    Installment
-                                  </span>
-                                )} */}
                               </div>
                             </div>
                           </div>
 
-                          <div className="flex items-center gap-2">
+                          <div className="flex flex-row sm:flex-row items-center gap-2 sm:gap-2 w-full sm:w-auto justify-between sm:justify-end">
                             <button
                               onClick={(e) => {
                                 e.stopPropagation()
                                 router.push(`/dashboard/transactions/${transaction.id}`)
                               }}
-                              className=" cursor-pointer flex items-center gap-1 rounded-md bg-neutral-100 px-2 py-1 text-xs font-medium text-neutral-700 transition-colors hover:bg-neutral-200 dark:bg-neutral-800 dark:text-neutral-300 dark:hover:bg-neutral-700"
+                              className="flex items-center gap-1 rounded-md bg-neutral-100 px-2 py-1 text-xs font-medium text-neutral-700 transition-colors hover:bg-neutral-200 dark:bg-neutral-800 dark:text-neutral-300 dark:hover:bg-neutral-700"
                             >
                               <ExternalLink className="h-3 w-3" />
                               Detalles
                             </button>
                             <div
                               className={cn(
-                                "text-right font-medium",
+                                "text-right font-medium text-sm sm:text-base",
                                 isPositive ? "text-green-600 dark:text-green-400" : "text-red-600 dark:text-red-400",
                               )}
                             >
@@ -469,12 +464,12 @@ export function TransactionsList({ transactions }: { transactions: TransactionOu
                               initial={{ height: 0, opacity: 0 }}
                               animate={{ height: "auto", opacity: 1 }}
                               exit={{ height: 0, opacity: 0 }}
-                              className="border-t border-neutral-200 bg-neutral-50 px-6 py-4 dark:border-neutral-700 dark:bg-neutral-800/50"
+                              className="border-t border-neutral-200 bg-neutral-50 px-2 py-3 sm:px-6 sm:py-4 dark:border-neutral-700 dark:bg-neutral-800/50"
                             >
-                              <div className="grid gap-3 text-sm md:grid-cols-2">
+                              <div className="grid gap-3 text-xs sm:text-sm md:grid-cols-2">
                                 <div>
                                   <p className="font-medium text-neutral-500 dark:text-neutral-400">Description</p>
-                                  <p className="mt-1 text-neutral-900 dark:text-white">{transaction.description}</p>
+                                  <p className="mt-1 text-neutral-900 dark:text-white break-words">{transaction.description}</p>
                                 </div>
                                 <div>
                                   <p className="font-medium text-neutral-500 dark:text-neutral-400">Category</p>
@@ -498,14 +493,6 @@ export function TransactionsList({ transactions }: { transactions: TransactionOu
                                     {formattedAmount}
                                   </p>
                                 </div>
-                                {/* {transaction.isInstallment && (
-                                  <div>
-                                    <p className="font-medium text-neutral-500 dark:text-neutral-400">Installment</p>
-                                    <p className="mt-1 text-neutral-900 dark:text-white">
-                                      Cuota {transaction.currentInstallment} de {transaction.totalInstallments}
-                                    </p>
-                                  </div>
-                                )} */}
                               </div>
                             </motion.div>
                           )}
