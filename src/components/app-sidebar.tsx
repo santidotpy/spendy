@@ -128,7 +128,7 @@ const data = {
     },
     {
       name: "Lista de resumenes",
-      url: "/dashboard/statements",
+      url: "/dashboard/resumenes",
       icon: Files,
     },
   ],
