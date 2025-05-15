@@ -11,6 +11,7 @@ import {
   varchar,
 } from "drizzle-orm/pg-core";
 import { text, timestamp, boolean } from "drizzle-orm/pg-core";
+import { users } from "./auth-schema";
 
 /**
  * This is an example of how to use the multi-project schema feature of Drizzle ORM. Use the same
@@ -45,9 +46,27 @@ export const transactions = createTable("transactions", (d) => ({
     .notNull(),
   updatedAt: d.timestamp({ withTimezone: true }).$onUpdate(() => new Date()),
 
-  userId: varchar("user_id", { length: 50 }).notNull().notNull(),
+  userId: varchar("user_id", { length: 50 }).notNull().references(() => users.id),
 
   cardId: integer("card_id")
     // .notNull()
     .references(() => cards.id),
+}));
+
+export const statements = createTable("statements", (d) => ({
+  id: serial("id").primaryKey(),
+  date: d.date("date").notNull(),
+  bankName: d.varchar("bank_name", { length: 256 }).notNull(),
+  userId: varchar("user_id", { length: 50 }).notNull().references(() => users.id),
+  fileId: integer("file_id")
+    .references(() => files.id),
+}));
+
+export const files = createTable("files", (d) => ({
+  id: serial("id").primaryKey(),
+  name: d.varchar("name", { length: 256 }).notNull(),
+  path: d.varchar("path", { length: 256 }).notNull(),
+  dataHash: d.text("data_hash").notNull(),
+  userId: varchar("user_id", { length: 50 }).notNull().references(() => users.id),
+  extension: d.varchar("extension", { length: 256 }).notNull(),
 }));

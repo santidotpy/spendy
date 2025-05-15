@@ -7,6 +7,8 @@ import {
 } from "~/server/api/trpc";
 import OpenAI from "openai";
 import { transactions } from "~/server/db/schema";
+import { mediaBuckets, supabase } from "~/lib/supabase";
+import { sanitizeFileName } from "~/lib/utils";
 
 const openai = new OpenAI({
   apiKey: process.env.OPENAI_API_KEY!,
@@ -108,5 +110,32 @@ Texto:
         })),
       );
       return { transactions: parsed };
+    }),
+
+  createFile: protectedProcedure
+    .input(z.object({ fileData: z.string(), fileName: z.string(), contentType: z.string() }))
+    .mutation(async ({ input, ctx }) => {
+      console.log("createFile", input);
+      const { fileData, fileName } = input;
+      const buffer = Buffer.from(input.fileData, "base64");
+
+      const filePath = `${Date.now()}-${sanitizeFileName(input.fileName)}`;
+      const { data, error } = await supabase.storage
+        .from(mediaBuckets.statements)
+        .upload(filePath, buffer, {
+          contentType: input.contentType,
+          upsert: false,
+        });
+
+      if (error) {
+        throw new Error("Error al subir el archivo");
+      }
+      const {
+        data: { publicUrl },
+      } = supabase.storage
+        .from(mediaBuckets.statements)
+        .getPublicUrl(data.path);
+
+      return { url: publicUrl, id: data.path };
     }),
 });

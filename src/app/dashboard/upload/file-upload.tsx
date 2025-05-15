@@ -21,9 +21,11 @@ import { Switch } from "~/components/ui/switch";
 import { Label } from "~/components/ui/label";
 import { Sparkles } from "lucide-react";
 import { Badge } from "~/components/ui/badge";
+import { fileToBase64 } from "~/lib/utils";
 const MAX_RETRY_AMOUNT = 3;
 
 export function FileUpload() {
+  const createFile = api.statement.createFile.useMutation();
   const [error, setError] = useState<string | null>(null);
   const parseText = api.statement.parseText.useMutation();
   const [isPdfLibReady, setIsPdfLibReady] = useState(false);
@@ -46,6 +48,45 @@ export function FileUpload() {
     } catch (err) {
       console.error("Error al enviar a OpenAI:", err);
       setError("Error procesando con GPT.");
+    }
+  };
+
+  const handleFileChange = async (file: File) => {
+    // const file = e.target.files?.[0];
+    // if (!file) return;
+
+    // Reset states
+    // setError(null);
+    // setIsUploading(true);
+
+    // Validate file type
+    if (!file.type.startsWith("application/pdf")) {
+      setError("Por favor selecciona un archivo PDF");
+      // setIsUploading(false);
+      return;
+    }
+
+    // Validate file size (max 4MB)
+    if (file.size > 4 * 1024 * 1024) {
+      setError("El archivo no puede ser mayor a 4MB");
+      // setIsUploading(false);
+      return;
+    }
+
+    try {
+      const fileData = await fileToBase64(file);
+      console.log("fileData", file.name, fileData);
+      const { url: publicUrl, id } = await createFile.mutateAsync({
+        fileName: file.name,
+        fileData,
+        contentType: file.type,
+      });
+      // onChange({ url: publicUrl, id });
+    } catch (err) {
+      console.error(err);
+      setError(err instanceof Error ? err.message : "Error subiendo el archivo");
+    } finally {
+      // setIsUploading(false);
     }
   };
 
@@ -97,12 +138,14 @@ export function FileUpload() {
 
     const uploadedFile = acceptedFiles[0];
     if (!uploadedFile) return;
-
+    
+    
     if (uploadedFile.type !== "application/pdf") {
       setError("Please upload a PDF file");
       return;
     }
-
+    
+    handleFileChange(uploadedFile);
     const text = await getRawText(uploadedFile);
     const transactions = await handleSendToOpenAI(text);
 
@@ -199,6 +242,7 @@ export function FileUpload() {
         <div className={parseText.isPending ? "invisible" : ""}>
           <input
             {...getInputProps()}
+            // onChange={handleFileChange}
             disabled={!isPdfLibReady || parseText.isPending}
           />
           <Upload className="text-muted-foreground mx-auto h-12 w-12" />
