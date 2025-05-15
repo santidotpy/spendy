@@ -1,9 +1,11 @@
-import { ClerkProvider,
-  SignInButton,
-  SignUpButton,
-  SignedIn,
-  SignedOut,
-  UserButton, } from "@clerk/nextjs";
+// import { ClerkProvider,
+//   SignInButton,
+//   SignUpButton,
+//   SignedIn,
+//   SignedOut,
+//   UserButton, } from "@clerk/nextjs";
+  import { Toaster } from "~/components/ui/sonner"
+
 import { Inter } from "next/font/google";
 // import "./globals.css";
 import "~/styles/globals.css";
@@ -35,21 +37,13 @@ export default function RootLayout({
   children: React.ReactNode;
 }) {
   return (
-    <ClerkProvider>
+    // <ClerkProvider>
       <html lang="en" className={`${geist.variable} ${inter.className}`}>
         <body className="dark">
-        {/* <header className="flex justify-end items-center p-4 gap-4 h-16">
-            <SignedOut>
-              <SignInButton />
-              <SignUpButton />
-            </SignedOut>
-            <SignedIn>
-              <UserButton />
-            </SignedIn>
-          </header> */}
           <TRPCReactProvider>{children}</TRPCReactProvider>
+          <Toaster position="bottom-center" richColors />
         </body>
       </html>
-    </ClerkProvider>
+    // </ClerkProvider>
   );
 }

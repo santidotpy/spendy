@@ -102,7 +102,7 @@ Texto:
       await ctx.db.insert(transactions).values(
         parsed.map((transaction) => ({
           ...transaction,
-          userId: ctx.auth.userId,
+          userId: ctx.userId,
           cardId: null, // Asignar el ID de la tarjeta si es necesario
           amount: String(transaction.amount).replace(",", "."),
         })),

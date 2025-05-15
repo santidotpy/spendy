@@ -8,7 +8,7 @@ const DB_URL = isDBPush
   : env.DATABASE_URL;
 
 export default {
-  schema: "./src/server/db/schema.ts",
+  schema: "./src/server/db",
   dialect: "postgresql",
   dbCredentials: {
     url: DB_URL,

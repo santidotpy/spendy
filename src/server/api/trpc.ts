@@ -9,7 +9,8 @@
 import { initTRPC, TRPCError } from "@trpc/server";
 import superjson from "superjson";
 import { ZodError } from "zod";
-import { auth as getAuth } from "@clerk/nextjs/server";
+// import { auth as getAuth } from "@clerk/nextjs/server";
+import { auth } from "~/lib/auth";
 
 import { db } from "~/server/db";
 import { cookies } from "next/headers";
@@ -27,11 +28,11 @@ import { cookies } from "next/headers";
  * @see https://trpc.io/docs/server/context
  */
 export const createTRPCContext = async (opts: { headers: Headers }) => {
-  const authData = await getAuth();
+  const session = await auth.api.getSession({ headers: opts.headers });
 
   return {
     db,
-    auth: authData,
+    userId: session?.user?.id ?? null,
     ...opts,
   };
 };
@@ -125,13 +126,13 @@ const timingMiddleware = t.middleware(async ({ next, path }) => {
 export const publicProcedure = t.procedure.use(timingMiddleware);
 
 const isAuthed = t.middleware(({ next, ctx }) => {
-  if (!ctx.auth.userId) {
+  if (!ctx.userId) {
     throw new TRPCError({ code: "UNAUTHORIZED" });
   }
 
   return next({
     ctx: {
-      auth: ctx.auth,
+      userId: ctx.userId,
     },
   });
 });

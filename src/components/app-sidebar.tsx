@@ -1,6 +1,6 @@
-"use client"
+"use client";
 
-import * as React from "react"
+import * as React from "react";
 import {
   Bot,
   PieChart,
@@ -13,22 +13,21 @@ import {
   DollarSign,
   LayoutDashboardIcon,
   ChartColumnBigIcon,
-  PieChartIcon
-} from "lucide-react"
+  PieChartIcon,
+} from "lucide-react";
 
-import { NavMain } from "~/components/nav-main"
-import { NavProjects } from "~/components/nav-projects"
-import { NavUser } from "~/components/nav-user"
-import { TeamSwitcher } from "~/components/team-switcher"
+import { NavMain } from "~/components/nav-main";
+import { NavProjects } from "~/components/nav-projects";
+import { NavUser } from "~/components/nav-user";
+import { TeamSwitcher } from "~/components/team-switcher";
 import {
   Sidebar,
   SidebarContent,
   SidebarFooter,
   SidebarHeader,
   SidebarRail,
-} from "~/components/ui/sidebar"
-import { UserButton } from "@clerk/nextjs"
-// This is sample data.
+} from "~/components/ui/sidebar";
+
 const data = {
   user: {
     name: "primo",
@@ -41,16 +40,6 @@ const data = {
       logo: Banknote,
       plan: "Enterprise",
     },
-    // {
-    //   name: "Acme Corp.",
-    //   logo: AudioWaveform,
-    //   plan: "Startup",
-    // },
-    // {
-    //   name: "Evil Corp.",
-    //   logo: Command,
-    //   plan: "Free",
-    // },
   ],
   navMain: [
     {
@@ -96,24 +85,6 @@ const data = {
       title: "Subir resumen",
       url: "/upload",
       icon: FileUp,
-      // items: [
-      //   {
-      //     title: "Introduction",
-      //     url: "#",
-      //   },
-      //   {
-      //     title: "Get Started",
-      //     url: "#",
-      //   },
-      //   {
-      //     title: "Tutorials",
-      //     url: "#",
-      //   },
-      //   {
-      //     title: "Changelog",
-      //     url: "#",
-      //   },
-      // ],
     },
     {
       title: "Settings",
@@ -161,25 +132,32 @@ const data = {
       icon: Files,
     },
   ],
+};
+interface AppSidebarProps extends React.ComponentProps<typeof Sidebar> {
+  user:
+    | {
+        id: string;
+        name: string;
+        email: string;
+        emailVerified: boolean;
+        createdAt: Date;
+        updatedAt: Date;
+        image?: string | null | undefined | undefined;
+      }
+    | undefined;
 }
 
-export function AppSidebar({ ...props }: React.ComponentProps<typeof Sidebar>) {
+export function AppSidebar({ ...props }: AppSidebarProps) {
   return (
     <Sidebar collapsible="icon" {...props}>
-      <SidebarHeader>
-        {/* <TeamSwitcher teams={data.teams} /> */}
-      </SidebarHeader>
+      <SidebarHeader></SidebarHeader>
       <SidebarContent>
-        {/* <NavMain items={data.navMain} /> */}
         <NavProjects projects={data.projects} />
       </SidebarContent>
       <SidebarFooter>
-        <NavUser user={data.user} />
-        {/* <div className="flex justify-between items-center mb-8">
-          <UserButton afterSignOutUrl="/" />
-        </div> */}
+        <NavUser user={props.user} />
       </SidebarFooter>
       <SidebarRail />
     </Sidebar>
-  )
+  );
 }

@@ -21,7 +21,7 @@ const TransactionSchema = z.array(
 export const transactionsRouter = createTRPCRouter({
   getAll: protectedProcedure.query(async ({ ctx }) => {
     const myTransactions = await ctx.db.query.transactions.findMany({
-      where: (transactions, { eq }) => eq(transactions.userId, ctx.auth.userId),
+      where: (transactions, { eq }) => eq(transactions.userId, ctx.userId),
       orderBy: (transactions, { desc }) => [desc(transactions.date)],
     });
     return myTransactions;
@@ -34,7 +34,7 @@ export const transactionsRouter = createTRPCRouter({
         where: (transactions, { eq, and }) =>
           and(
             eq(transactions.id, input.id),
-            eq(transactions.userId, ctx.auth.userId),
+            eq(transactions.userId, ctx.userId),
           ),
       });
       return transaction;

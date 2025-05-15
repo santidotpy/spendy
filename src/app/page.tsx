@@ -1,4 +1,4 @@
-import { auth } from "@clerk/nextjs/server";
+// import { auth } from "@clerk/nextjs/server";
 import { redirect } from "next/navigation";
 import Image from "next/image";
 import Link from "next/link";
@@ -6,11 +6,11 @@ import { ArrowRight, BarChart3, Lock, Tag, Upload } from "lucide-react"
 
 
 export default async function Home() {
-  const { userId } = await auth();
+  // const { userId } = await auth();
 
-  if (userId) {
-    redirect("/dashboard");
-  }
+  // if (userId) {
+  //   redirect("/dashboard");
+  // }
 
   return (
     <div className="flex min-h-screen flex-col">
