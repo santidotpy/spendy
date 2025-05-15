@@ -69,16 +69,16 @@ export function RegisterForm({ className, ...props }: React.ComponentPropsWithou
     }
 
     return (
-        <div className={cn("flex flex-col gap-6", className)} {...props}>
-            <Card>
+      <div className={cn("flex flex-col w-full max-w-md mx-auto", className)} {...props}>
+      <Card className="w-full">
         <CardHeader>
           <CardTitle className="text-2xl">Registrarse</CardTitle>
           <CardDescription>Crea una cuenta llenando el siguiente formulario</CardDescription>
         </CardHeader>
-        <CardContent>
+        <CardContent className="px-4 sm:px-6">
           <form onSubmit={handleSubmit}>
-            <div className="flex flex-col gap-6">
-              <div className="grid grid-cols-2 gap-4">
+          <div className="flex flex-col gap-6">
+              <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
                 <div className="grid gap-2">
                   <Label htmlFor="firstName">Nombre</Label>
                   <Input id="firstName" name="firstName" placeholder="John" required
