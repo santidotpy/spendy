@@ -6,7 +6,7 @@ import {
   publicProcedure,
 } from "~/server/api/trpc";
 import OpenAI from "openai";
-import { transactions } from "~/server/db/schema";
+import { transactions, files } from "~/server/db/schema";
 import { mediaBuckets, supabase } from "~/lib/supabase";
 import { sanitizeFileName } from "~/lib/utils";
 
@@ -80,11 +80,6 @@ Texto:
       const response = choice.message.content;
       console.log("📦 Respuesta cruda de OpenAI:\n", response);
 
-      // const clean = response
-      //   .trim()
-      //   .replace(/^```json|^```|```$/g, "")
-      //   .trim();
-
       let parsedJson: any;
 
       try {
@@ -112,30 +107,77 @@ Texto:
       return { transactions: parsed };
     }),
 
-  createFile: protectedProcedure
-    .input(z.object({ fileData: z.string(), fileName: z.string(), contentType: z.string() }))
+  checkFileExists: protectedProcedure
+    .input(z.object({ dataHash: z.string() }))
     .mutation(async ({ input, ctx }) => {
-      console.log("createFile", input);
-      const { fileData, fileName } = input;
-      const buffer = Buffer.from(input.fileData, "base64");
+      const existing = await ctx.db.query.files.findFirst({
+        where: (f, { eq, and }) =>
+          and(eq(f.dataHash, input.dataHash), eq(f.userId, ctx.userId)),
+      });
 
-      const filePath = `${Date.now()}-${sanitizeFileName(input.fileName)}`;
+      return {
+        exists: !!existing,
+        fileId: existing?.id || null,
+        url: existing?.path || null,
+      };
+    }),
+
+  createFile: protectedProcedure
+    .input(z.object({
+      fileData: z.string(),
+      fileName: z.string(),
+      contentType: z.string(),
+      dataHash: z.string(),
+    }))
+    .mutation(async ({ input, ctx }) => {
+      // Verificar primero si el archivo ya existe
+      const existing = await ctx.db.query.files.findFirst({
+        where: (f, { eq, and }) =>
+          and(eq(f.dataHash, input.dataHash), eq(f.userId, ctx.userId)),
+      });
+
+      if (existing) {
+        // Si ya existe, retornamos la información del archivo existente
+        return { 
+          url: existing.path, 
+          id: existing.id,
+          duplicate: true 
+        };
+      }
+
+      // Si no existe, procedemos con la subida
+      const { fileData, fileName, contentType, dataHash } = input;
+      const buffer = Buffer.from(fileData, "base64");
+  
+      const filePath = `${Date.now()}-${sanitizeFileName(fileName)}`;
       const { data, error } = await supabase.storage
         .from(mediaBuckets.statements)
         .upload(filePath, buffer, {
-          contentType: input.contentType,
+          contentType,
           upsert: false,
         });
-
-      if (error) {
-        throw new Error("Error al subir el archivo");
-      }
+  
+      if (error) throw new Error("Error al subir el archivo");
+  
       const {
         data: { publicUrl },
       } = supabase.storage
         .from(mediaBuckets.statements)
         .getPublicUrl(data.path);
-
-      return { url: publicUrl, id: data.path };
+  
+      // Guardamos el registro en la base de datos
+      const fileRecord = await ctx.db.insert(files).values({
+        name: fileName,
+        path: publicUrl,
+        dataHash,
+        userId: ctx.userId,
+        extension: fileName.split(".").pop() || "",
+      }).returning({ id: files.id });
+  
+      return { 
+        url: publicUrl, 
+        id: fileRecord[0]?.id || data.path,
+        duplicate: false 
+      };
     }),
 });

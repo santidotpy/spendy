@@ -21,7 +21,8 @@ import { Switch } from "~/components/ui/switch";
 import { Label } from "~/components/ui/label";
 import { Sparkles } from "lucide-react";
 import { Badge } from "~/components/ui/badge";
-import { fileToBase64 } from "~/lib/utils";
+import { calculateFileHash, fileToBase64 } from "~/lib/utils";
+import { toast } from "sonner";
 const MAX_RETRY_AMOUNT = 3;
 
 export function FileUpload() {
@@ -32,6 +33,7 @@ export function FileUpload() {
   const [transactions, setTransactions] = useState<TransactionOutput[] | null>(
     null,
   );
+  // const [isDuplicate, setIsDuplicate] = useState(false);
   const [selectedProvider, setSelectedProvider] = useState<string | null>(null);
   const [selectedModel, setSelectedModel] = useState<string>("");
   const [useAI, setUseAI] = useState(true);
@@ -44,6 +46,7 @@ export function FileUpload() {
   const handleSendToOpenAI = async (text: string) => {
     try {
       const result = await parseText.mutateAsync({ text });
+      toast.success("Extracción de transacciones completada");
       return result.transactions;
     } catch (err) {
       console.error("Error al enviar a OpenAI:", err);
@@ -51,45 +54,45 @@ export function FileUpload() {
     }
   };
 
-  const handleFileChange = async (file: File) => {
-    // const file = e.target.files?.[0];
-    // if (!file) return;
-
-    // Reset states
-    // setError(null);
-    // setIsUploading(true);
-
-    // Validate file type
+  const handleFileChange = async (file: File): Promise<boolean> => {
     if (!file.type.startsWith("application/pdf")) {
       setError("Por favor selecciona un archivo PDF");
-      // setIsUploading(false);
-      return;
+      return true;
     }
-
-    // Validate file size (max 4MB)
+  
     if (file.size > 4 * 1024 * 1024) {
       setError("El archivo no puede ser mayor a 4MB");
-      // setIsUploading(false);
-      return;
+      return true;
     }
-
+  
+    const dataHash = await calculateFileHash(file);
     try {
       const fileData = await fileToBase64(file);
-      console.log("fileData", file.name, fileData);
-      const { url: publicUrl, id } = await createFile.mutateAsync({
+      const { url: publicUrl, id, duplicate } = await createFile.mutateAsync({
         fileName: file.name,
         fileData,
         contentType: file.type,
+        dataHash: dataHash,
       });
-      // onChange({ url: publicUrl, id });
+  
+      if (duplicate) {
+        toast.warning("Este archivo ya ha sido subido anteriormente");
+        setError("Este archivo ya ha sido subido anteriormente");
+        // setIsDuplicate(true);
+        return true; // archivo duplicado
+      }
+  
+      setError(null);
+      // setIsDuplicate(false);
+      return false; // archivo no duplicado
     } catch (err) {
       console.error(err);
       setError(err instanceof Error ? err.message : "Error subiendo el archivo");
-    } finally {
-      // setIsUploading(false);
+      return true; // error: mejor evitar seguir
     }
   };
 
+  
   const getRawText = useCallback(
     async (file: File, retryAmount = 0): Promise<string> => {
       const buffer = await file.arrayBuffer();
@@ -145,7 +148,10 @@ export function FileUpload() {
       return;
     }
     
-    handleFileChange(uploadedFile);
+    const wasDuplicate = await handleFileChange(uploadedFile);
+    // si esta duplicado, no se procesa
+    if (wasDuplicate) return;
+    
     const text = await getRawText(uploadedFile);
     const transactions = await handleSendToOpenAI(text);
 
@@ -216,7 +222,7 @@ export function FileUpload() {
 
   return (
     <div className="w-full">
-      <div className="mb-4 flex items-center space-x-4 p-3 sm:mb-0">
+      {/* <div className="mb-4 flex items-center space-x-4 p-3 sm:mb-0">
         <Switch id="ai-extraction" checked={useAI} onCheckedChange={setUseAI} />
         <div className="flex items-center gap-2">
           <Label htmlFor="ai-extraction" className="font-medium">
@@ -228,7 +234,7 @@ export function FileUpload() {
             )}
           </Label>
         </div>
-      </div>
+      </div> */}
       <div
         {...getRootProps()}
         className={`cursor-pointer rounded-lg border-2 border-dashed p-8 text-center transition-colors ${isDragActive ? "border-primary bg-primary/5" : "border-muted-foreground/25"} ${error ? "border-red-500" : ""}`}
