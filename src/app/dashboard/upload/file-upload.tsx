@@ -21,7 +21,7 @@ import { Switch } from "~/components/ui/switch";
 import { Label } from "~/components/ui/label";
 import { Sparkles } from "lucide-react";
 import { Badge } from "~/components/ui/badge";
-import { calculateFileHash, fileToBase64 } from "~/lib/utils";
+import { calculateFileHash, fileToBase64, getBankName } from "~/lib/utils";
 import { toast } from "sonner";
 const MAX_RETRY_AMOUNT = 3;
 
@@ -68,11 +68,14 @@ export function FileUpload() {
     const dataHash = await calculateFileHash(file);
     try {
       const fileData = await fileToBase64(file);
+      const rawText = await getRawText(file);
+      const bankName = getBankName(rawText);
       const { url: publicUrl, id, duplicate } = await createFile.mutateAsync({
         fileName: file.name,
         fileData,
         contentType: file.type,
         dataHash: dataHash,
+        bankName: bankName,
       });
   
       if (duplicate) {

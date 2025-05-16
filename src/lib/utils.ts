@@ -49,3 +49,12 @@ export async function calculateFileHash(file: File): Promise<string> {
   const hashArray = Array.from(new Uint8Array(hashBuffer));
   return hashArray.map(b => b.toString(16).padStart(2, "0")).join("");
 }
+
+
+export function getBankName(text: string): string {
+  const banks = ["Santander", "BBVA", "Galicia"];
+  const encontrado = banks.find((bank) =>
+    text.toLowerCase().includes(bank.toLowerCase())
+  );
+  return encontrado ?? "Desconocido";
+}

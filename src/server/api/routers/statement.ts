@@ -6,7 +6,7 @@ import {
   publicProcedure,
 } from "~/server/api/trpc";
 import OpenAI from "openai";
-import { transactions, files } from "~/server/db/schema";
+import { transactions, files, statements } from "~/server/db/schema";
 import { mediaBuckets, supabase } from "~/lib/supabase";
 import { sanitizeFileName } from "~/lib/utils";
 
@@ -122,12 +122,15 @@ Texto:
       };
     }),
 
-  createFile: protectedProcedure
+    createFile: protectedProcedure
     .input(z.object({
       fileData: z.string(),
       fileName: z.string(),
       contentType: z.string(),
       dataHash: z.string(),
+      // Optionally, add bankName and date if you want to store them
+      bankName: z.string().optional(),
+      date: z.string().optional(), // ISO string
     }))
     .mutation(async ({ input, ctx }) => {
       // Verificar primero si el archivo ya existe
@@ -174,10 +177,50 @@ Texto:
         extension: fileName.split(".").pop() || "",
       }).returning({ id: files.id });
   
+      // Create statement record
+      await ctx.db.insert(statements).values({
+        userId: ctx.userId,
+        fileId: fileRecord[0]?.id,
+        bankName: input.bankName ?? "Desconocido",
+        date: input.date ? input.date : new Date().toISOString(),
+      });
+  
       return { 
         url: publicUrl, 
         id: fileRecord[0]?.id || data.path,
         duplicate: false 
       };
+    }),
+
+    getAllFiles: protectedProcedure.query(async ({ ctx }) => {
+      const userFiles = await ctx.db.query.files.findMany({
+        where: (f, { eq }) => eq(f.userId, ctx.userId),
+        orderBy: (f, { desc }) => [desc(f.id)],
+      });
+      return userFiles;
+    }),
+
+    getAllStatements: protectedProcedure.query(async ({ ctx }) => {
+      const userStatements = await ctx.db.query.statements.findMany({
+        where: (s, { eq }) => eq(s.userId, ctx.userId),
+        orderBy: (s, { desc }) => [desc(s.id)],
+      });
+      console.log("AAAAAStatements",userStatements);
+      return userStatements;
+    }),
+
+    getAll: protectedProcedure.query(async ({ ctx }) => {
+      const myStatements = await ctx.db.query.statements.findMany({
+        where: (statements, { eq }) => eq(statements.userId, ctx.userId),
+        orderBy: (statements, { desc }) => [desc(statements.date)],
+      });
+      return myStatements;
+    }),
+
+    getFileById: protectedProcedure.input(z.object({ id: z.number() })).query(async ({ input, ctx }) => {
+      const file = await ctx.db.query.files.findFirst({
+        where: (f, { eq }) => eq(f.id, input.id),
+      });
+      return file;
     }),
 });
