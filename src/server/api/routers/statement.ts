@@ -223,4 +223,22 @@ Texto:
       });
       return file;
     }),
+    getStatementById: protectedProcedure.input(z.object({ id: z.number() })).query(async ({ input, ctx }) => {
+      const statement = await ctx.db.query.statements.findFirst({
+        where: (s, { eq }) => eq(s.id, input.id),
+      });
+      return statement;
+    }),
+
+    getSignedFileUrl: protectedProcedure
+  .input(z.object({ path: z.string() }))
+  .query(async ({ input }) => {
+    const { data, error } = await supabase.storage
+      .from(mediaBuckets.statements)
+      .createSignedUrl(input.path, 60 * 30); // 30 minutos
+
+    if (error || !data) throw new Error("No se pudo generar la URL firmada");
+    return { signedUrl: data.signedUrl };
+  })
+
 });
