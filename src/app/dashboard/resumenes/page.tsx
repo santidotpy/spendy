@@ -44,14 +44,14 @@ export default async function StatementsPage() {
                     Ver detalles
                   </Link>
                 </Button>
-                {statement.fileId && (
+                {/* {statement.fileId && (
                   <Button variant="secondary" asChild>
                     <a href={`/dashboard/resumenes/${statement.id}`} target="_blank" rel="noopener noreferrer">
                       <Download className="mr-2 h-4 w-4" />
                       Descargar
                     </a>
                   </Button>
-                )}
+                )} */}
               </CardFooter>
             </Card>
           ))
