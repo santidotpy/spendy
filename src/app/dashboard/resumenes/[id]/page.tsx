@@ -1,39 +1,43 @@
-import { api } from "~/trpc/server"
-import ClientPage from "./client-page"
+import { api } from "~/trpc/server";
+import ClientPage from "./client-page";
 
 export default async function StatementDetailPage({
   params,
 }: {
-  params: { id: string }
+  params: { id: string };
 }) {
-  const statement = await api.statement.getStatementById({ id: Number(params.id) })
-  // console.log("123 statement", statement)
-  const file = await api.statement.getFileById({ id: statement?.fileId! })
-  // console.log("123 file", file)
-  const signedFileUrl = await api.statement.getSignedFileUrl({ path: file?.path.split("/").pop()! })
-  // console.log("123 signedFileUrl", signedFileUrl)
-  
+  const statement = await api.statement.getStatementById({
+    id: Number(params.id),
+  });
+  const file = await api.statement.getFileById({ id: statement?.fileId! });
+  const signedFileUrl = await api.statement.getSignedFileUrl({
+    path: file?.path.split("/").pop()!,
+  });
+
   if (file) {
-    file.path = signedFileUrl.signedUrl
+    file.path = signedFileUrl.signedUrl;
   }
 
   if (!statement || !file) {
     return (
-      <div className="container mx-auto py-8 px-4">
-        <div className="text-center py-12">
-          <h3 className="mt-4 text-lg font-medium">Statement not found</h3>
+      <div className="container mx-auto px-4 py-8">
+        <div className="py-12 text-center">
+          <h3 className="mt-4 text-lg font-medium">Resumen no encontrado</h3>
           <p className="text-muted-foreground mt-2">
-            The statement you're looking for doesn't exist or has been removed.
+            El resumen que estás buscando no existe o ha sido eliminado.
           </p>
           <div className="mt-4">
-            <a href="/dashboard/resumenes" className="text-primary hover:underline">
-              Back to Statements
+            <a
+              href="/dashboard/resumenes"
+              className="text-primary hover:underline"
+            >
+              Volver a Resúmenes
             </a>
           </div>
         </div>
       </div>
-    )
+    );
   }
 
-  return <ClientPage statement={statement} file={file} />
+  return <ClientPage statement={statement} file={file} />;
 }

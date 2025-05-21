@@ -5,23 +5,16 @@ import { Button } from "~/components/ui/button";
 import { Card, CardContent } from "~/components/ui/card";
 import {
   ArrowLeft,
-  Download,
   Eye,
   FileText,
-  Calendar,
-  CreditCard,
   Clock,
   FileIcon,
   Landmark,
 } from "lucide-react";
 import Link from "next/link";
-// import { PDFViewer } from "~/components/pdf-viewer"
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "~/components/ui/tabs";
 import { Badge } from "~/components/ui/badge";
-import { Separator } from "~/components/ui/separator";
-// import { Document, Page } from "react-pdf";
-// import PDFViewer from "~/components/pdf-viewer";
-// import { BankLogo } from "~/components/bank-logo"
+import PDFViewer from "~/components/pdf-viewer";
 
 interface Statement {
   id: number;
@@ -69,19 +62,6 @@ export default function ClientPage({ statement, file }: ClientPageProps) {
             </div>
           </div>
         </div>
-        {/* <div className="flex w-full items-center gap-2 md:w-auto">
-          <Button variant="outline" className="w-full md:w-auto">
-            <Download className="mr-2 h-4 w-4" />
-            Download PDF
-          </Button>
-          <Button
-            className="w-full md:w-auto"
-            onClick={() => setShowPreview(!showPreview)}
-          >
-            <Eye className="mr-2 h-4 w-4" />
-            {showPreview ? "Hide Preview" : "Show Preview"}
-          </Button>
-        </div> */}
       </div>
 
       {/* Main content */}
@@ -97,7 +77,6 @@ export default function ClientPage({ statement, file }: ClientPageProps) {
                 >
                   {statement.bankName}
                 </Badge>
-                {/* <div className="text-sm text-muted-foreground">ID: {statement.id}</div> */}
               </div>
 
               <h2 className="mb-6 text-xl font-semibold">
@@ -140,18 +119,17 @@ export default function ClientPage({ statement, file }: ClientPageProps) {
           <Tabs defaultValue="preview" className="w-full">
             <TabsList className="mb-6 grid w-full grid-cols-1">
               <TabsTrigger value="preview">Vista previa</TabsTrigger>
-              {/* <TabsTrigger value="analytics">Análisis</TabsTrigger> */}
             </TabsList>
 
             <TabsContent value="preview" className="mt-0">
               {showPreview ? (
-                <div className="overflow-hidden rounded-lg bg-white shadow-lg dark:bg-slate-800">
-                  {/* <PDFViewer url={statement.pdfUrl} fileName={statement.fileName} /> */}
+                <div className="overflow-hidden rounded-lg bg-white shadow-lg dark:bg-neutral-900">
+                  <PDFViewer file={file.path} className="min-h-[800px]" />
                   {/* <Document file={file.path}>
                     <Page pageNumber={1} />
                   </Document> */}
 
-                  <Card className="flex h-[600px] items-center justify-center border-none bg-gradient-to-br from-slate-50 to-white shadow-lg dark:from-neutral-900 dark:to-neutral-800">
+                  {/* <Card className="flex h-[600px] items-center justify-center border-none bg-gradient-to-br from-slate-50 to-white shadow-lg dark:from-neutral-900 dark:to-neutral-800">
                     <CardContent className="flex flex-col items-center justify-center p-6 text-center">
                       <div className="bg-primary/10 mb-6 rounded-full p-4">
                         <FileText className="text-primary h-12 w-12" />
@@ -164,7 +142,7 @@ export default function ClientPage({ statement, file }: ClientPageProps) {
                         </Button>
                       </Link>
                     </CardContent>
-                  </Card>
+                  </Card> */}
                 </div>
               ) : (
                 <Card className="flex h-[600px] items-center justify-center border-none bg-gradient-to-br from-slate-50 to-white shadow-lg dark:from-neutral-900 dark:to-neutral-800">
@@ -188,18 +166,6 @@ export default function ClientPage({ statement, file }: ClientPageProps) {
                 </Card>
               )}
             </TabsContent>
-
-            {/* <TabsContent value="analytics" className="mt-0">
-              <Card className="border-none shadow-lg bg-gradient-to-br from-slate-50 to-white dark:from-neutral-900 dark:to-neutral-800 h-[600px] flex items-center justify-center">
-                <CardContent className="text-center p-6">
-                  <h3 className="text-xl font-semibold mb-2">Analytics Coming Soon</h3>
-                  <p className="text-muted-foreground max-w-md mx-auto">
-                    We're working on adding detailed analytics for your bank statements. This feature will be available
-                    soon.
-                  </p>
-                </CardContent>
-              </Card>
-            </TabsContent> */}
           </Tabs>
         </div>
       </div>
