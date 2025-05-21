@@ -235,7 +235,7 @@ Texto:
   .query(async ({ input }) => {
     const { data, error } = await supabase.storage
       .from(mediaBuckets.statements)
-      .createSignedUrl(input.path, 60 * 30); // 30 minutos
+      .createSignedUrl(input.path, 60); // 1 minuto
 
     if (error || !data) throw new Error("No se pudo generar la URL firmada");
     return { signedUrl: data.signedUrl };
