@@ -1,18 +1,21 @@
-"use client";
+'use client';
 
-import { useResizeObserver } from "@wojtekmaj/react-hooks";
-import { useCallback, useState } from "react";
-import { Document, Page, pdfjs } from "react-pdf";
+import { useResizeObserver } from '@wojtekmaj/react-hooks';
+import { useCallback, useState } from 'react';
+import { Document, Page, pdfjs } from 'react-pdf';
 
-import "react-pdf/dist/esm/Page/AnnotationLayer.css";
-import "react-pdf/dist/esm/Page/TextLayer.css";
-import { ScrollArea } from "./ui/scroll-area";
+import 'react-pdf/dist/esm/Page/AnnotationLayer.css';
+import 'react-pdf/dist/esm/Page/TextLayer.css';
+import { ScrollArea } from './ui/scroll-area';
 
-pdfjs.GlobalWorkerOptions.workerSrc = `//cdnjs.cloudflare.com/ajax/libs/pdf.js/${pdfjs.version}/pdf.worker.min.js`;
+pdfjs.GlobalWorkerOptions.workerSrc = new URL(
+  'pdfjs-dist/build/pdf.worker.min.mjs',
+  import.meta.url
+).toString();
 
 const options = {
-  cMapUrl: "/cmaps/",
-  standardFontDataUrl: "/standard_fonts/",
+  cMapUrl: '/cmaps/',
+  standardFontDataUrl: '/standard_fonts/',
 };
 const resizeObserverOptions = {};
 const maxWidth = 1400;
