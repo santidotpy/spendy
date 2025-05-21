@@ -17,7 +17,6 @@ export default async function DashboardLayout({
 }) {
   // const { userId } = await auth();
   // const user = await currentUser()
-  // console.log(user?.firstName)
 
   // if (!userId) {
   //   redirect("/sign-in");
@@ -26,7 +25,6 @@ export default async function DashboardLayout({
   const session = await auth.api.getSession({
     headers: await headers(),
   });
-  console.log("session", session);
   // if (!session) {
   //   return <div>Not authenticated</div>;
   // }

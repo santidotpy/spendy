@@ -205,7 +205,6 @@ Texto:
         where: (s, { eq }) => eq(s.userId, ctx.userId),
         orderBy: (s, { desc }) => [desc(s.id)],
       });
-      console.log("AAAAAStatements",userStatements);
       return userStatements;
     }),
 

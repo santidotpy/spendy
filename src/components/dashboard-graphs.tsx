@@ -219,7 +219,6 @@ export function Dashboard({
   const uniqueCategories = Array.from(
     new Set(transactions.map((t) => t.category)),
   ).sort();
-  console.log(uniqueCategories);
 
   // gasto por categoría
   const categoryExpenses = uniqueCategories.map((category) => {
