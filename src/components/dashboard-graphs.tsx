@@ -1,25 +1,20 @@
 "use client";
 
-import { useEffect, useState } from "react";
+import { useState } from "react";
 import {
   BarChart,
   Bar,
-  LineChart,
-  Line,
   PieChart,
   Pie,
-  Cell,
   XAxis,
   YAxis,
   CartesianGrid,
-  Tooltip,
   ResponsiveContainer,
   Legend,
   Label,
 } from "recharts";
 import {
   ArrowDownIcon,
-  ArrowUpIcon,
   ChevronDown,
   ChevronUp,
   ArrowUpRight,
@@ -27,7 +22,6 @@ import {
   Search,
   Filter,
   X,
-  WalletIcon,
   TrendingUpIcon,
   TrendingDownIcon,
   TrendingUp,
@@ -43,13 +37,6 @@ import {
 } from "~/components/ui/card";
 import { Button } from "~/components/ui/button";
 import {
-  Select,
-  SelectContent,
-  SelectItem,
-  SelectTrigger,
-  SelectValue,
-} from "~/components/ui/select";
-import {
   Table,
   TableBody,
   TableCell,
@@ -62,10 +49,10 @@ import {
   ChartContainer,
   ChartTooltip,
   ChartTooltipContent,
-  ChartConfig,
+  type ChartConfig,
 } from "~/components/ui/chart";
 import { Input } from "~/components/ui/input";
-import { TransactionOutput } from "~/server/api/types";
+import type { TransactionOutput } from "~/server/api/types";
 import { useDollarRate } from "~/hooks/use-currency-rate";
 import { formatCurrency } from "~/utils/pdf-extract";
 
@@ -187,8 +174,6 @@ const weeklyComparison = [
   { name: "Week 4", expenses: 950, income: 0 },
 ];
 
-// const balance = totalIncome - totalExpenses
-
 // Format currency
 const formatCurrencyUSD = (amount: number) => {
   return new Intl.NumberFormat("es-ES", {
@@ -292,9 +277,6 @@ export function Dashboard({
 
     return (
       <div className="bg-background rounded-md border p-2 shadow-sm">
-        {/* <div className={cn("font-medium", labelClassName)}>
-          {labelFormatter(value, payload)}
-        </div> */}
         <div className="text-foreground text-sm font-medium">{name}</div>
         <div className="text-muted-foreground text-sm">
           ${value.toLocaleString()} ({percentage}%)
@@ -366,9 +348,9 @@ export function Dashboard({
 
   return (
     <div className="flex min-h-screen w-full flex-col bg-gray-50 dark:bg-neutral-900">
-      <main className="flex-1 p-6">
+      <main className="flex-1 p-2 sm:p-6">
         {/* Summary Cards */}
-        <div className="grid gap-6 md:grid-cols-2 lg:grid-cols-3">
+        <div className="grid grid-cols-1 gap-2 sm:grid-cols-2 sm:gap-6 lg:grid-cols-3">
           <Card>
             <CardHeader className="flex flex-row items-center justify-between pb-2">
               <CardTitle className="text-sm font-medium">
@@ -397,7 +379,7 @@ export function Dashboard({
               {/* <p className="text-xs text-gray-500">+5.2% from last month</p> */}
             </CardContent>
           </Card>
-          <Card>
+          <Card className="sm:col-span-2 lg:col-span-1">
             <CardHeader className="flex flex-row items-center justify-between pb-2">
               <CardTitle className="text-sm font-medium">Total</CardTitle>
               {balance >= 0 ? (
@@ -430,9 +412,9 @@ export function Dashboard({
         </div>
 
         {/* Charts Section */}
-        <div className="mt-6 grid gap-6 md:grid-cols-2 lg:grid-cols-3">
+        <div className="mt-2 grid grid-cols-1 gap-2 sm:mt-6 sm:gap-6 lg:grid-cols-3">
           {/* Monthly Spendings Bar Chart (USD vs ARS) */}
-          <Card className="col-span-full lg:col-span-2">
+          <Card className="col-span-1 lg:col-span-2">
             <CardHeader>
               <CardTitle>Gastos mensuales por moneda</CardTitle>
               <CardDescription>Últimos 6 meses</CardDescription>
@@ -456,9 +438,7 @@ export function Dashboard({
                     transactions.forEach((t) => {
                       if (Number.parseFloat(t.amount) > 0) {
                         const date = new Date(t.date);
-                        const key = `${date.getFullYear()}-${String(
-                          date.getMonth() + 1,
-                        ).padStart(2, "0")}`;
+                        const key = `${date.getFullYear()}-${String(date.getMonth() + 1).padStart(2, "0")}`;
                         if (!monthly[key]) monthly[key] = { usd: 0, ars: 0 };
                         if (t.currency === "USD") {
                           monthly[key].usd += Math.abs(
@@ -542,9 +522,8 @@ export function Dashboard({
               </CardDescription>
             </CardHeader>
             <CardContent>
-              <div className="h-[300px]">
+              <div className="h-[250px] sm:h-[300px]">
                 <ResponsiveContainer width="100%" height="100%">
-                  {/* TODO: que todas los consumos esten en ARS */}
                   <ChartContainer
                     config={chartConfig}
                     className="mx-auto aspect-square max-h-[250px]"
@@ -576,7 +555,6 @@ export function Dashboard({
                                     y={viewBox.cy}
                                     className="fill-foreground text-center text-sm font-bold"
                                   >
-                                    {/* categoria mas alta */}
                                     {
                                       categoryExpenses.reduce((max, cat) =>
                                         cat.value > max.value ? cat : max,
@@ -588,7 +566,6 @@ export function Dashboard({
                                     y={(viewBox.cy || 0) + 24}
                                     className="fill-muted-foreground text-xs"
                                   >
-                                    {/* {totalExpenses.toLocaleString()} */}
                                     Mayor consumo
                                   </tspan>
                                 </text>
@@ -601,10 +578,9 @@ export function Dashboard({
                   </ChartContainer>
                 </ResponsiveContainer>
               </div>
-              <div className="mt-4 grid grid-cols-2 gap-2">
+              <div className="xs:grid-cols-2 mt-4 grid grid-cols-1 gap-2">
                 {uniqueCategories.map((category) => (
                   <div key={category} className="flex items-center gap-2">
-                    {/* <div className="h-3 w-3 rounded-full" style={{ backgroundColor: category.color }} /> */}
                     <div
                       className="h-3 w-3 rounded-full"
                       style={{ backgroundColor: getCategoryColorPie(category) }}
@@ -618,13 +594,13 @@ export function Dashboard({
         </div>
 
         {/* Transactions Table */}
-        <div className="mt-6">
+        <div className="mt-4 sm:mt-6">
           <Card>
-            <CardHeader>
-              <div className="flex items-center justify-between">
+            <CardHeader className="px-3 sm:px-6">
+              <div className="flex flex-col gap-3 sm:flex-row sm:items-center sm:justify-between">
                 <CardTitle>Transacciones Recientes</CardTitle>
-                <div className="flex gap-2">
-                  <div className="relative w-full sm:w-64">
+                <div className="flex flex-col gap-2 sm:flex-row">
+                  <div className="relative w-full">
                     <Search className="absolute top-1/2 left-3 h-4 w-4 -translate-y-1/2 text-gray-400" />
                     <Input
                       type="text"
@@ -639,12 +615,12 @@ export function Dashboard({
                     size="sm"
                     onClick={() => setShowFilters(!showFilters)}
                     className={cn(
-                      "flex items-center gap-1",
+                      "flex items-center justify-center gap-1",
                       showFilters && "bg-gray-100",
                     )}
                   >
                     <Filter className="h-4 w-4" />
-                    <span className="hidden sm:inline">Filtros</span>
+                    <span className="inline">Filtros</span>
                     {hasActiveFilters && (
                       <span className="ml-1 flex h-5 w-5 items-center justify-center rounded-full bg-blue-600 text-xs text-white">
                         {selectedCategories.length}
@@ -660,7 +636,7 @@ export function Dashboard({
 
             {/* Filters Panel */}
             {showFilters && (
-              <div className="border-t border-b border-gray-200 bg-gray-50 px-6 py-4 dark:border-neutral-700 dark:bg-neutral-800">
+              <div className="border-t border-b border-gray-200 bg-gray-50 px-2 py-3 sm:px-6 sm:py-4 dark:border-neutral-700 dark:bg-neutral-800">
                 <div className="flex items-center justify-between">
                   <h3 className="text-sm font-medium text-gray-700">Filtros</h3>
                   {hasActiveFilters && (
@@ -701,12 +677,12 @@ export function Dashboard({
               </div>
             )}
 
-            <CardContent>
-              <div className="rounded-md border">
+            <CardContent className="px-1 sm:px-6">
+              <div className="overflow-x-auto rounded-md border">
                 <Table>
                   <TableHeader>
                     <TableRow>
-                      <TableHead>
+                      <TableHead className="hidden sm:table-cell">
                         <Button
                           variant="ghost"
                           size="sm"
@@ -723,7 +699,9 @@ export function Dashboard({
                         </Button>
                       </TableHead>
                       <TableHead>Descripción</TableHead>
-                      <TableHead>Categoría</TableHead>
+                      <TableHead className="hidden sm:table-cell">
+                        Categoría
+                      </TableHead>
                       <TableHead>
                         <Button
                           variant="ghost"
@@ -746,7 +724,7 @@ export function Dashboard({
                     {paginatedTransactions.length === 0 ? (
                       <TableRow>
                         <TableCell colSpan={4} className="h-24 text-center">
-                          No transactions found
+                          No hay transacciones
                         </TableCell>
                       </TableRow>
                     ) : (
@@ -762,11 +740,30 @@ export function Dashboard({
                             key={transaction.id}
                             className="hover:bg-gray-50 dark:hover:bg-neutral-800"
                           >
-                            <TableCell className="font-medium">
+                            <TableCell className="hidden font-medium sm:table-cell">
                               {formatDate(transaction.date)}
                             </TableCell>
-                            <TableCell>{transaction.description}</TableCell>
-                            <TableCell>
+                            <TableCell className="px-2 sm:px-4">
+                              <div className="flex flex-col">
+                                <span className="line-clamp-1">
+                                  {transaction.description}
+                                </span>
+                                <span className="text-xs text-gray-500 sm:hidden">
+                                  {formatDate(transaction.date)}
+                                </span>
+                                <span className="mt-1 sm:hidden">
+                                  <span
+                                    className={cn(
+                                      "inline-flex items-center rounded-full border px-2 py-0.5 text-xs font-normal",
+                                      getCategoryColor(transaction.category),
+                                    )}
+                                  >
+                                    {transaction.category}
+                                  </span>
+                                </span>
+                              </div>
+                            </TableCell>
+                            <TableCell className="hidden sm:table-cell">
                               <span
                                 className={cn(
                                   "inline-flex items-center rounded-full border px-2 py-0.5 text-xs font-normal",
@@ -801,7 +798,7 @@ export function Dashboard({
 
               {/* Pagination */}
               {totalPages > 1 && (
-                <div className="mt-4 flex items-center justify-between">
+                <div className="mt-4 flex flex-col items-start justify-between gap-2 sm:flex-row sm:items-center">
                   <p className="text-sm text-gray-500">
                     Showing {(currentPage - 1) * itemsPerPage + 1} to{" "}
                     {Math.min(
@@ -848,8 +845,8 @@ export default function DashboardGraphs({
   transactions: TransactionOutput[];
 }) {
   return (
-    <div className="container mx-auto p-4">
-      <h1 className="mb-6 text-2xl font-bold text-neutral-900 dark:text-white">
+    <div className="container mx-auto px-0 py-2 sm:px-4 sm:py-4">
+      <h1 className="mb-4 text-xl font-bold text-neutral-900 sm:mb-6 sm:text-2xl dark:text-white">
         Dashboard
       </h1>
       <Dashboard transactions={transactions} />
