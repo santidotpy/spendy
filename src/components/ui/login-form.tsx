@@ -38,7 +38,7 @@ export function LoginForm({
         if (response.error.message === "Invalid credentials") {
           toast.error("Credenciales inválidas")
         } else {
-          toast.error(response.error.message)
+          toast.error("Error al iniciar sesión")
         }
         setIsError(true)
       } else {
