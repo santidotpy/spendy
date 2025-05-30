@@ -55,7 +55,7 @@ import { Input } from "~/components/ui/input";
 import type { TransactionOutput } from "~/server/api/types";
 import { useDollarRate } from "~/hooks/use-currency-rate";
 import { formatCurrency } from "~/utils/pdf-extract";
-// import { SubscriptionWidget } from "~/components/subscription-widget"
+import { SubscriptionWidget } from "~/components/subscription-widget"
 
 // Helper function for class names
 function cn(...inputs: (string | undefined | null | false | 0)[]) {
@@ -412,9 +412,9 @@ export function Dashboard({
         </div>
 
         {/* Subscription Widget */}
-        {/* <div className="mt-2 sm:mt-6">
+        <div className="mt-2 sm:mt-6">
           <SubscriptionWidget transactions={transactions} />
-        </div> */}
+        </div>
 
         {/* Charts Section */}
         <div className="mt-2 grid grid-cols-1 gap-2 sm:mt-6 sm:gap-6 lg:grid-cols-3">

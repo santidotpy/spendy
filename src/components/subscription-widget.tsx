@@ -14,6 +14,7 @@ import {
   Video,
   Wifi,
   Dumbbell,
+  Clapperboard
 } from "lucide-react"
 import { Card, CardContent, CardHeader, CardTitle } from "~/components/ui/card"
 import { Button } from "~/components/ui/button"
@@ -28,35 +29,35 @@ const subscriptionPatterns = {
     name: "Netflix",
     icon: Video,
     color: "bg-red-500",
-    category: "Entertainment",
+    category: "Entretenimiento",
   },
   spotify: {
     keywords: ["spotify", "spot"],
     name: "Spotify",
     icon: Music,
     color: "bg-green-500",
-    category: "Music",
+    category: "Entretenimiento",
   },
   prime: {
-    keywords: ["amazon prime", "prime video", "amzn"],
+    keywords: ["amazon prime", "prime video", "amzn", "DLO*PRIMEVIDEO"],
     name: "Prime Video",
     icon: Play,
     color: "bg-blue-600",
-    category: "Entertainment",
+    category: "Entretenimiento",
   },
   disney: {
     keywords: ["disney", "disney+", "disneyplus"],
     name: "Disney+",
     icon: Video,
     color: "bg-blue-700",
-    category: "Entertainment",
+    category: "Entretenimiento",
   },
   youtube: {
     keywords: ["youtube premium", "youtube music", "ytb"],
     name: "YouTube Premium",
     icon: Play,
     color: "bg-red-600",
-    category: "Entertainment",
+    category: "Entretenimiento",
   },
   gaming: {
     keywords: ["xbox", "playstation", "steam", "epic games", "nintendo"],
@@ -70,21 +71,28 @@ const subscriptionPatterns = {
     name: "Internet/Phone",
     icon: Wifi,
     color: "bg-orange-500",
-    category: "Utilities",
+    category: "Servicios",
   },
   shopping: {
     keywords: ["mercadolibre", "amazon", "subscription"],
     name: "Shopping",
     icon: ShoppingBag,
     color: "bg-yellow-600",
-    category: "Shopping",
+    category: "Compras",
   },
   gym: {
     keywords: ["gym", "fitness", "gympass"],
     name: "Gym",
     icon: Dumbbell,
     color: "bg-green-500",
-    category: "Gym",
+    category: "Salud",
+  },
+  "max": {
+    keywords: ["max", "HBO", "HBO Max", "HBO Go", "hbo", "hbo max"],
+    name: "HBO Max",
+    icon: Clapperboard,
+    color: "bg-purple-600",
+    category: "Entretenimiento",
   },
 }
 
@@ -141,7 +149,7 @@ function identifySubscriptions(transactions: TransactionOutput[]): SubscriptionD
   const subscriptions: SubscriptionData[] = []
 
   subscriptionMap.forEach((transactions, key) => {
-    if (transactions.length >= 2) {
+    if (transactions.length >= 1) {
       // At least 2 transactions to be considered recurring
       const pattern = subscriptionPatterns[key as keyof typeof subscriptionPatterns]
       const sortedTransactions = transactions.sort((a, b) => new Date(b.date).getTime() - new Date(a.date).getTime())
@@ -177,7 +185,10 @@ function identifySubscriptions(transactions: TransactionOutput[]): SubscriptionD
     }
   })
 
-  return subscriptions.sort((a, b) => b.monthlyAmount - a.monthlyAmount)
+  // if category is "Supermercado" remove it
+  const filteredSubscriptions = subscriptions.filter((subscription) => subscription.category !== "Supermercado")
+
+  return filteredSubscriptions.sort((a, b) => b.monthlyAmount - a.monthlyAmount)
 }
 
 export function SubscriptionWidget({ transactions }: { transactions: TransactionOutput[] }) {
