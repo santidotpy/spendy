@@ -306,7 +306,7 @@ export function SubscriptionWidget({ transactions }: { transactions: Transaction
                       </div>
                     </div>
 
-                    <div className="grid grid-cols-2 gap-4 text-xs">
+                    {/* <div className="grid grid-cols-2 gap-4 text-xs">
                       <div className="flex items-center gap-2">
                         <Calendar className="h-3 w-3 text-muted-foreground" />
                         <div>
@@ -326,11 +326,11 @@ export function SubscriptionWidget({ transactions }: { transactions: Transaction
                           </p>
                         </div>
                       </div>
-                    </div>
+                    </div> */}
 
                     <div className="mt-3 pt-3 border-t">
                       <div className="flex items-center justify-between text-xs">
-                        <span className="text-muted-foreground">{subscription.transactions.length} transacciones</span>
+                        {/* <span className="text-muted-foreground">{subscription.transactions.length} transacciones</span> */}
                         <Badge variant="outline">
                           Activa
                         </Badge>
