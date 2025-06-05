@@ -14,6 +14,7 @@ import {
   LayoutDashboardIcon,
   ChartColumnBigIcon,
   PieChartIcon,
+  Calendar,
 } from "lucide-react";
 
 import { NavMain } from "~/components/nav-main";
@@ -120,6 +121,11 @@ const data = {
       name: "Transacciones",
       url: "/dashboard/transactions",
       icon: DollarSign,
+    },
+    {
+      name: "Calendario",
+      url: "/dashboard/calendario",
+      icon: Calendar,
     },
     {
       name: "Subir resumen",
