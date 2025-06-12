@@ -18,6 +18,8 @@ import {
 import { DarkSubscriptionCalendar } from "~/components/dark-subscription-calendar"
 import { SubscriptionDetailsDialog } from "~/components/subscription-details-dialog"
 import type { Subscription, CalendarDay } from "~/types/subscription"
+import { TransactionOutput } from "~/server/api/types"
+import { identifySubscriptions } from "~/lib/utils"
 
 // Sample subscription data with proper icons and categories
 const sampleSubscriptions: Subscription[] = [
@@ -167,7 +169,39 @@ const sampleSubscriptions: Subscription[] = [
   },
 ]
 
-export default function DarkSubscriptionCalendarDemo() {
+export default function DarkSubscriptionCalendarDemo({ transactions }: { transactions: TransactionOutput[] }) {
+  const subscriptionData = identifySubscriptions(transactions)
+
+  // Map SubscriptionData to Subscription for the calendar
+  const subscriptions: Subscription[] = subscriptionData.map((sub) => {
+    // Try to infer paymentDay and frequency
+    let paymentDay = 1
+    let frequency: "monthly" | "annual" = "monthly"
+    let nextPayment: Date = new Date(sub.nextPayment)
+    if (sub.transactions && sub.transactions.length > 0 && sub.transactions[0]) {
+      const lastDate = new Date(sub.transactions[0].date)
+      paymentDay = lastDate.getDate()
+      // Heuristic: if the gap between last two payments is > 28 days, treat as annual
+      if (sub.transactions.length > 1 && sub.transactions[1]) {
+        const prevDate = new Date(sub.transactions[1].date)
+        const diffDays = Math.abs((lastDate.getTime() - prevDate.getTime()) / (1000 * 60 * 60 * 24))
+        if (diffDays > 330) frequency = "annual"
+      }
+    }
+    return {
+      id: sub.id,
+      name: sub.name,
+      amount: sub.monthlyAmount,
+      currency: sub.currency,
+      color: sub.color,
+      icon: sub.icon,
+      paymentDay,
+      frequency,
+      nextPayment,
+      category: sub.category,
+    }
+  })
+
   const [selectedDay, setSelectedDay] = useState<CalendarDay | null>(null)
 
   const handleDayClick = (day: CalendarDay) => {
@@ -188,7 +222,7 @@ export default function DarkSubscriptionCalendarDemo() {
 
   return (
     <div className="min-h-screen bg-neutral-950">
-      <DarkSubscriptionCalendar subscriptions={sampleSubscriptions} onDayClick={handleDayClick} />
+      <DarkSubscriptionCalendar subscriptions={subscriptions} onDayClick={handleDayClick} />
 
       <SubscriptionDetailsDialog
         selectedDay={selectedDay}

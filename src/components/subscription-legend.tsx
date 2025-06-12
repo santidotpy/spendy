@@ -3,6 +3,7 @@ import { formatCurrency } from "~/utils/calendar"
 import { Card, CardContent, CardHeader, CardTitle } from "~/components/ui/card"
 import { Badge } from "~/components/ui/badge"
 import { Separator } from "~/components/ui/separator"
+import { ScrollArea } from "~/components/ui/scroll-area"
 
 interface SubscriptionLegendProps {
   subscriptions: Subscription[]
@@ -31,6 +32,7 @@ export function SubscriptionLegend({ subscriptions, monthlyTotal }: Subscription
         </div>
       </CardHeader>
       <CardContent className="space-y-4">
+        <ScrollArea className="h-[500px]">
         {Object.entries(groupedSubscriptions).map(([category, subs]) => (
           <div key={category} className="space-y-3">
             <h4 className="text-sm font-medium text-neutral-300 uppercase tracking-wide">{category}</h4>
@@ -49,11 +51,11 @@ export function SubscriptionLegend({ subscriptions, monthlyTotal }: Subscription
                     </div>
                     <div className="flex flex-col">
                       <span className="text-sm font-medium text-white">{subscription.name}</span>
-                      <div className="flex items-center gap-2">
+                      <div className="flex items-center gap-2 flex-wrap">
+                        <span className="text-xs text-neutral-400">Day {subscription.paymentDay}</span>
                         <Badge variant="outline" className="text-xs border-neutral-600 text-neutral-300">
                           {subscription.frequency}
                         </Badge>
-                        <span className="text-xs text-neutral-400">Day {subscription.paymentDay}</span>
                       </div>
                     </div>
                   </div>
@@ -66,8 +68,9 @@ export function SubscriptionLegend({ subscriptions, monthlyTotal }: Subscription
             {Object.keys(groupedSubscriptions).indexOf(category) < Object.keys(groupedSubscriptions).length - 1 && (
               <Separator className="bg-neutral-800" />
             )}
-          </div>
-        ))}
+            </div>
+          ))}
+        </ScrollArea>
       </CardContent>
     </Card>
   )
