@@ -38,6 +38,8 @@ interface ClientPageProps {
   file: File;
 }
 
+const IMAGE_EXTENSIONS = ["png", "jpg", "jpeg"];
+
 export default function ClientPage({ statement, file }: ClientPageProps) {
   const [showPreview, setShowPreview] = useState(true);
 
@@ -123,26 +125,16 @@ export default function ClientPage({ statement, file }: ClientPageProps) {
 
             <TabsContent value="preview" className="mt-0">
               {showPreview ? (
-                <div className="overflow-hidden rounded-lg bg-white shadow-lg dark:bg-neutral-900">
-                  <PDFViewer file={file.path} className="min-h-[800px]" />
-                  {/* <Document file={file.path}>
-                    <Page pageNumber={1} />
-                  </Document> */}
-
-                  {/* <Card className="flex h-[600px] items-center justify-center border-none bg-gradient-to-br from-slate-50 to-white shadow-lg dark:from-neutral-900 dark:to-neutral-800">
-                    <CardContent className="flex flex-col items-center justify-center p-6 text-center">
-                      <div className="bg-primary/10 mb-6 rounded-full p-4">
-                        <FileText className="text-primary h-12 w-12" />
-                      </div>
-
-                      <Link href={file.path} target="_blank">
-                        <Button className="cursor-pointer">
-                          <Eye className="mr-2 h-4 w-4" />
-                          Ver resumen
-                        </Button>
-                      </Link>
-                    </CardContent>
-                  </Card> */}
+                <div className="overflow-hidden rounded-lg bg-white shadow-lg dark:bg-neutral-900 flex items-center justify-center min-h-[800px]">
+                  {IMAGE_EXTENSIONS.includes(file.extension.toLowerCase()) ? (
+                    <img
+                      src={file.path}
+                      alt={file.name}
+                      className="max-h-[800px] w-auto object-contain rounded-lg"
+                    />
+                  ) : (
+                    <PDFViewer file={file.path} className="min-h-[800px]" />
+                  )}
                 </div>
               ) : (
                 <Card className="flex h-[600px] items-center justify-center border-none bg-gradient-to-br from-slate-50 to-white shadow-lg dark:from-neutral-900 dark:to-neutral-800">
