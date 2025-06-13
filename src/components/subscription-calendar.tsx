@@ -6,11 +6,12 @@ import { Button } from "~/components/ui/button"
 import { Card, CardContent, CardHeader } from "~/components/ui/card"
 import { CalendarDayComponent } from "~/components/calendar-day"
 import { SubscriptionLegend } from "~/components/subscription-legend"
-import { getDaysInMonth, getSubscriptionsForDay, getMonthlyTotal, formatCurrency } from "~/utils/calendar"
-import type { Subscription, CalendarDay } from "~/types/subscription"
+import { getDaysInMonth, getTransactionsForDay, getMonthlyTotal, formatCurrency } from "~/utils/calendar"
+import type { TransactionOutput } from "~/server/api/types"
+import type { CalendarDay } from "~/types/subscription"
 
 interface SubscriptionCalendarProps {
-  subscriptions: Subscription[]
+  transactions: TransactionOutput[]
   onDayClick?: (day: CalendarDay) => void
 }
 
@@ -30,7 +31,7 @@ const MONTHS = [
   "December",
 ]
 
-export function SubscriptionCalendar({ subscriptions, onDayClick }: SubscriptionCalendarProps) {
+export function SubscriptionCalendar({ transactions, onDayClick }: SubscriptionCalendarProps) {
   const [currentDate, setCurrentDate] = useState(new Date())
 
   const year = currentDate.getFullYear()
@@ -40,11 +41,11 @@ export function SubscriptionCalendar({ subscriptions, onDayClick }: Subscription
     const days = getDaysInMonth(year, month)
     return days.map((day) => ({
       ...day,
-      subscriptions: getSubscriptionsForDay(subscriptions, day.date),
+      transactions: getTransactionsForDay(transactions, day.date),
     }))
-  }, [year, month, subscriptions])
+  }, [year, month, transactions])
 
-  const monthlyTotal = useMemo(() => getMonthlyTotal(subscriptions), [subscriptions])
+  const monthlyTotal = useMemo(() => getMonthlyTotal(transactions), [transactions])
 
   const navigateMonth = (direction: "prev" | "next") => {
     setCurrentDate((prev) => {
@@ -77,7 +78,7 @@ export function SubscriptionCalendar({ subscriptions, onDayClick }: Subscription
         </div>
 
         <div className="text-right">
-          <p className="text-sm text-muted-foreground">Monthly spend</p>
+          <p className="text-sm text-muted-foreground">Gasto mensual</p>
           <p className="text-2xl font-bold">{formatCurrency(monthlyTotal, "USD")}</p>
         </div>
       </div>
@@ -106,9 +107,9 @@ export function SubscriptionCalendar({ subscriptions, onDayClick }: Subscription
         </div>
 
         {/* Legend */}
-        <div className="lg:col-span-1">
-          <SubscriptionLegend subscriptions={subscriptions} monthlyTotal={monthlyTotal} />
-        </div>
+        {/* <div className="lg:col-span-1"> */}
+          {/* <SubscriptionLegend transactions={filteredTransactions} monthlyTotal={monthlyTotal} /> */}
+        {/* </div> */}
       </div>
     </div>
   )

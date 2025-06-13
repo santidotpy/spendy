@@ -205,7 +205,7 @@ export default function DarkSubscriptionCalendarDemo({ transactions }: { transac
   const [selectedDay, setSelectedDay] = useState<CalendarDay | null>(null)
 
   const handleDayClick = (day: CalendarDay) => {
-    if (day.subscriptions.length > 0) {
+    if (day.transactions.length > 0) {
       setSelectedDay(day)
     }
   }
@@ -222,7 +222,7 @@ export default function DarkSubscriptionCalendarDemo({ transactions }: { transac
 
   return (
     <div className="min-h-screen bg-neutral-950">
-      <DarkSubscriptionCalendar subscriptions={subscriptions} onDayClick={handleDayClick} />
+      <DarkSubscriptionCalendar transactions={transactions} onDayClick={handleDayClick} />
 
       <SubscriptionDetailsDialog
         selectedDay={selectedDay}

@@ -6,31 +6,32 @@ import { Button } from "~/components/ui/button"
 import { Card, CardContent, CardHeader } from "~/components/ui/card"
 import { CalendarDayComponent } from "~/components/calendar-day"
 import { SubscriptionLegend } from "~/components/subscription-legend"
-import { getDaysInMonth, getSubscriptionsForDay, getMonthlyTotal, formatCurrency } from "~/utils/calendar"
-import type { Subscription, CalendarDay } from "~/types/subscription"
+import { getDaysInMonth, getTransactionsForDay, getMonthlyTotal, formatCurrency } from "~/utils/calendar"
+import type { TransactionOutput } from "~/server/api/types"
+import type { CalendarDay } from "~/types/subscription"
 
 interface DarkSubscriptionCalendarProps {
-  subscriptions: Subscription[]
+  transactions: TransactionOutput[]
   onDayClick?: (day: CalendarDay) => void
 }
 
-const WEEKDAYS = ["Sun", "Mon", "Tue", "Wed", "Thu", "Fri", "Sat"]
+const WEEKDAYS = ["Dom", "Lun", "Mar", "Mie", "Jue", "Vie", "Sab"]
 const MONTHS = [
-  "January",
-  "February",
-  "March",
-  "April",
-  "May",
-  "June",
-  "July",
-  "August",
-  "September",
-  "October",
-  "November",
-  "December",
+  "Enero",
+  "Febrero",
+  "Marzo",
+  "Abril",
+  "Mayo",
+  "Junio",
+  "Julio",
+  "Agosto",
+  "Septiembre",
+  "Octubre",
+  "Noviembre",
+  "Diciembre",
 ]
 
-export function DarkSubscriptionCalendar({ subscriptions, onDayClick }: DarkSubscriptionCalendarProps) {
+export function DarkSubscriptionCalendar({ transactions, onDayClick }: DarkSubscriptionCalendarProps) {
   const [currentDate, setCurrentDate] = useState(new Date())
 
   const year = currentDate.getFullYear()
@@ -40,11 +41,20 @@ export function DarkSubscriptionCalendar({ subscriptions, onDayClick }: DarkSubs
     const days = getDaysInMonth(year, month)
     return days.map((day) => ({
       ...day,
-      subscriptions: getSubscriptionsForDay(subscriptions, day.date),
+      transactions: getTransactionsForDay(transactions, day.date),
     }))
-  }, [year, month, subscriptions])
+  }, [year, month, transactions])
 
-  const monthlyTotal = useMemo(() => getMonthlyTotal(subscriptions), [subscriptions])
+  // const monthlyTotal = useMemo(() => getMonthlyTotal(transactions), [transactions])
+  const filteredTransactions = useMemo(() => {
+    return transactions.filter((t) => {
+      const date = new Date(t.date)
+      return date.getFullYear() === year && date.getMonth() === month
+    })
+  }, [transactions, year, month])
+  
+  const monthlyTotal = useMemo(() => getMonthlyTotal(filteredTransactions), [filteredTransactions])
+  
 
   const navigateMonth = (direction: "prev" | "next") => {
     setCurrentDate((prev) => {
@@ -95,12 +105,12 @@ export function DarkSubscriptionCalendar({ subscriptions, onDayClick }: DarkSubs
             className="bg-gray-900 border-gray-700 hover:bg-gray-800 text-white"
           >
             <CalendarIcon className="h-4 w-4 mr-2" />
-            Today
+            Hoy
           </Button>
         </div>
 
         <div className="text-right">
-          <p className="text-sm text-gray-400">Monthly Spend</p>
+          <p className="text-sm text-gray-400">Gasto total</p>
           <p className="text-3xl font-bold text-white">{formatCurrency(monthlyTotal, "USD")}</p>
         </div>
       </div>
@@ -130,7 +140,7 @@ export function DarkSubscriptionCalendar({ subscriptions, onDayClick }: DarkSubs
 
         {/* Legend */}
         <div className="xl:col-span-1">
-          <SubscriptionLegend subscriptions={subscriptions} monthlyTotal={monthlyTotal} />
+          <SubscriptionLegend transactions={filteredTransactions} monthlyTotal={monthlyTotal} />
         </div>
       </div>
     </div>

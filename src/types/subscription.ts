@@ -1,4 +1,5 @@
 import type { LucideIcon } from "lucide-react"
+import type { TransactionOutput } from "~/server/api/types"
 
 export interface Subscription {
   id: string
@@ -15,7 +16,7 @@ export interface Subscription {
 
 export interface CalendarDay {
   date: Date
-  subscriptions: Subscription[]
+  transactions: TransactionOutput[]
   isCurrentMonth: boolean
   isToday: boolean
 }
