@@ -12,12 +12,14 @@ import type { TransactionOutput } from "~/server/types"
 import { calculateFileHash, fileToBase64, getBankName } from "~/lib/utils"
 import { toast } from "sonner"
 import { motion, AnimatePresence } from "motion/react"
+import { extractTextFromImage } from "~/lib/ocr"
 const MAX_RETRY_AMOUNT = 3
 
 export function FileUpload() {
   const createFile = api.statement.createFile.useMutation()
-  const [error, setError] = useState<string | null>(null)
+  const checkFileExists = api.statement.checkFileExists.useMutation()
   const parseText = api.statement.parseText.useMutation()
+  const [error, setError] = useState<string | null>(null)
   const [isPdfLibReady, setIsPdfLibReady] = useState(false)
   const [transactions, setTransactions] = useState<TransactionOutput[] | null>(null)
   const [selectedProvider, setSelectedProvider] = useState<string | null>(null)
@@ -35,7 +37,7 @@ export function FileUpload() {
       setProcessingStage("extracting")
       const result = await parseText.mutateAsync({ text })
       setProcessingStage("success")
-      toast.success("Extracción de transacciones completada")
+      // if (result.transactions.length > 0) toast.success("Extracción de transacciones completada")
       return result.transactions
     } catch (err) {
       console.error("Error al enviar a OpenAI:", err)
@@ -44,51 +46,65 @@ export function FileUpload() {
     }
   }
 
-  const handleFileChange = async (file: File): Promise<boolean> => {
-    if (!file.type.startsWith("application/pdf")) {
-      setError("Por favor selecciona un archivo PDF")
-      return true
-    }
+  // const handleFileChange = async (file: File): Promise<{ duplicate: boolean; text?: string }> => {
+  //   // Accept PDF and image types
+  //   const isPdf = file.type === "application/pdf"
+  //   const isImage = ["image/png", "image/jpeg", "image/jpg"].includes(file.type)
+  //   if (!isPdf && !isImage) {
+  //     setError("Por favor selecciona un archivo PDF o imagen (.png, .jpg)")
+  //     return { duplicate: true }
+  //   }
 
-    if (file.size > 4 * 1024 * 1024) {
-      setError("El archivo no puede ser mayor a 4MB")
-      return true
-    }
+  //   if (file.size > 4 * 1024 * 1024) {
+  //     setError("El archivo no puede ser mayor a 4MB")
+  //     return { duplicate: true }
+  //   }
 
-    setProcessingStage("uploading")
-    const dataHash = await calculateFileHash(file)
-    try {
-      const fileData = await fileToBase64(file)
-      const rawText = await getRawText(file)
-      const bankName = getBankName(rawText)
-      const {
-        url: publicUrl,
-        id,
-        duplicate,
-      } = await createFile.mutateAsync({
-        fileName: file.name,
-        fileData,
-        contentType: file.type,
-        dataHash: dataHash,
-        bankName: bankName,
-      })
+  //   setProcessingStage("uploading")
+  //   const dataHash = await calculateFileHash(file)
+  //   try {
+  //     const fileData = await fileToBase64(file)
+  //     let rawText = ""
+  //     if (isPdf) {
+  //       rawText = await getRawText(file)
+  //     } else if (isImage) {
+  //       try {
+  //         rawText = await extractTextFromImage(file)
+  //       } catch (err) {
+  //         setError("No se pudo leer el texto de la imagen. Asegúrate de que sea legible.")
+  //         setProcessingStage("idle")
+  //         return { duplicate: true }
+  //       }
+  //     }
+  //     const bankName = getBankName(rawText)
+  //     const {
+  //       url: publicUrl,
+  //       id,
+  //       duplicate,
+  //     } = await createFile.mutateAsync({
+  //       fileName: file.name,
+  //       fileData,
+  //       contentType: file.type,
+  //       dataHash: dataHash,
+  //       bankName: bankName,
+  //     })
 
-      if (duplicate) {
-        toast.warning("Este archivo ya ha sido subido anteriormente")
-        setError("Este archivo ya ha sido subido anteriormente")
-        setProcessingStage("idle")
-        return true // archivo duplicado
-      }
+  //     if (duplicate) {
+  //       toast.warning("Este archivo ya ha sido subido anteriormente")
+  //       setError("Este archivo ya ha sido subido anteriormente")
+  //       setProcessingStage("idle")
+  //       return { duplicate: true }
+  //     }
 
-      setError(null)
-      return false // archivo no duplicado
-    } catch (err) {
-      console.error(err)
-      setError(err instanceof Error ? err.message : "Error subiendo el archivo")
-      setProcessingStage("idle")
-      return true // error: mejor evitar seguir
-    }
-  }
+  //     setError(null)
+  //     return { duplicate: false, text: rawText }
+  //   } catch (err) {
+  //     console.error(err)
+  //     setError(err instanceof Error ? err.message : "Error subiendo el archivo")
+  //     setProcessingStage("idle")
+  //     return { duplicate: true }
+  //   }
+  // }
 
   const getRawText = useCallback(
     async (file: File, retryAmount = 0): Promise<string> => {
@@ -133,33 +149,145 @@ export function FileUpload() {
     [pdfjs.current],
   )
 
+  // const onDrop = useCallback(async (acceptedFiles: File[]) => {
+  //   if (acceptedFiles.length === 0) return
+
+  //   const uploadedFile = acceptedFiles[0]
+  //   if (!uploadedFile) return
+
+  //   const isPdf = uploadedFile.type === "application/pdf"
+  //   const isImage = ["image/png", "image/jpeg", "image/jpg"].includes(uploadedFile.type)
+  //   if (!isPdf && !isImage) {
+  //     setError("Por favor sube un archivo PDF o imagen (.png, .jpg)")
+  //     return
+  //   }
+
+  //   const { duplicate, text } = await handleFileChange(uploadedFile)
+  //   if (duplicate) return
+
+  //   let extractedText = text
+  //   if (!extractedText) {
+  //     // fallback: try to extract text if not already done
+  //     if (isPdf) {
+  //       extractedText = await getRawText(uploadedFile)
+  //     } else if (isImage) {
+  //       try {
+  //         extractedText = await extractTextFromImage(uploadedFile)
+  //       } catch {
+  //         setError("No se pudo extraer texto de la imagen.")
+  //         setProcessingStage("idle")
+  //         return
+  //       }
+  //     }
+  //   }
+
+  //   if (!extractedText || !extractedText.trim()) {
+  //     setError("No se pudo extraer texto del archivo. Asegúrate de que el archivo sea legible.")
+  //     setProcessingStage("idle")
+  //     return
+  //   }
+
+  //   const transactions = await handleSendToOpenAI(extractedText)
+  //   if (!transactions || transactions.length === 0) {
+  //     setError("No se detectaron transacciones en el archivo.")
+  //     setProcessingStage("idle")
+  //     return
+  //   }
+  //   setTransactions(transactions)
+  //   setError(null)
+  // }, [])
+
   const onDrop = useCallback(async (acceptedFiles: File[]) => {
     if (acceptedFiles.length === 0) return
-
+  
     const uploadedFile = acceptedFiles[0]
     if (!uploadedFile) return
-
-    if (uploadedFile.type !== "application/pdf") {
-      setError("Please upload a PDF file")
+  
+    const isPdf = uploadedFile.type === "application/pdf"
+    const isImage = ["image/png", "image/jpeg", "image/jpg"].includes(uploadedFile.type)
+    
+    if (!isPdf && !isImage) {
+      setError("Por favor sube un archivo PDF o imagen (.png, .jpg)")
       return
     }
-
-    const wasDuplicate = await handleFileChange(uploadedFile)
-    // si esta duplicado, no se procesa
-    if (wasDuplicate) return
-
-    const text = await getRawText(uploadedFile)
-    const transactions = await handleSendToOpenAI(text)
-
-    if (transactions) setTransactions(transactions)
-
+  
+    if (uploadedFile.size > 4 * 1024 * 1024) {
+      setError("El archivo no puede ser mayor a 4MB")
+      return
+    }
+  
+    setProcessingStage("uploading")
     setError(null)
+  
+    try {
+      // 1. Extraer el texto primero
+      let extractedText = ""
+      if (isPdf) {
+        extractedText = await getRawText(uploadedFile)
+      } else if (isImage) {
+        try {
+          extractedText = await extractTextFromImage(uploadedFile)
+        } catch (err) {
+          setError("No se pudo leer el texto de la imagen. Asegúrate de que sea legible.")
+          setProcessingStage("idle")
+          return
+        }
+      }
+  
+      if (!extractedText || !extractedText.trim()) {
+        setError("No se pudo extraer texto del archivo. Asegúrate de que el archivo sea legible.")
+        setProcessingStage("idle")
+        return
+      }
+  
+      // 2. Verificar si es duplicado ANTES de llamar a OpenAI
+      const dataHash = await calculateFileHash(uploadedFile)
+      const { exists } = await checkFileExists.mutateAsync({ dataHash })
+      
+      if (exists) {
+        toast.warning("Este archivo ya ha sido subido anteriormente")
+        setError("Este archivo ya ha sido subido anteriormente")
+        setProcessingStage("idle")
+        return // Salir SIN llamar a OpenAI
+      }
+  
+      // 3. Solo si NO es duplicado, hacer el llamado a OpenAI
+      const transactions = await handleSendToOpenAI(extractedText)
+      if (!transactions || transactions.length === 0) {
+        setError("No se detectaron transacciones en el archivo.")
+        setProcessingStage("idle")
+        return // Salir SIN guardar el archivo
+      }
+  
+      // 4. Solo si hay transacciones, guardar el archivo
+      const fileData = await fileToBase64(uploadedFile)
+      const bankName = getBankName(extractedText)
+  
+      const { url: publicUrl, id } = await createFile.mutateAsync({
+        fileName: uploadedFile.name,
+        fileData,
+        contentType: uploadedFile.type,
+        dataHash: dataHash,
+        bankName: bankName,
+      })
+  
+      // 5. Todo exitoso
+      setTransactions(transactions)
+      setError(null)
+      
+    } catch (err) {
+      console.error(err)
+      setError(err instanceof Error ? err.message : "Error procesando el archivo")
+      setProcessingStage("idle")
+    }
   }, [])
 
   const { getRootProps, getInputProps, isDragActive } = useDropzone({
     onDrop,
     accept: {
       "application/pdf": [".pdf"],
+      "image/png": [".png"],
+      "image/jpeg": [".jpeg", ".jpg"],
     },
     maxFiles: 1,
     disabled: processingStage !== "idle",
@@ -265,7 +393,7 @@ export function FileUpload() {
               <p className="text-muted-foreground max-w-sm text-sm">
                 Sube tu resumen de tarjeta para extraer automáticamente las transacciones
               </p>
-              <p className="text-muted-foreground mt-2 text-xs">Solo se aceptan archivos PDF (máx. 4MB)</p>
+              <p className="text-muted-foreground mt-2 text-xs">Solo se aceptan archivos PDF o imagen (.png, .jpg) (máx. 4MB)</p>
 
               {error && (
                 <motion.div
