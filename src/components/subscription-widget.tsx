@@ -4,192 +4,14 @@ import { useState, useMemo } from "react"
 import {
   ChevronLeft,
   ChevronRight,
-  Calendar,
-  DollarSign,
   Zap,
-  Play,
-  Music,
-  ShoppingBag,
-  Gamepad2,
-  Video,
-  Wifi,
-  Dumbbell,
-  Clapperboard
 } from "lucide-react"
 import { Card, CardContent, CardHeader, CardTitle } from "~/components/ui/card"
 import { Button } from "~/components/ui/button"
 import { Badge } from "~/components/ui/badge"
 import { formatCurrency } from "~/utils/pdf-extract"
 import type { TransactionOutput } from "~/server/api/types"
-
-// Subscription service patterns and their associated icons/colors
-const subscriptionPatterns = {
-  netflix: {
-    keywords: ["netflix", "nflx"],
-    name: "Netflix",
-    icon: Video,
-    color: "bg-red-500",
-    category: "Entretenimiento",
-  },
-  spotify: {
-    keywords: ["spotify", "spot"],
-    name: "Spotify",
-    icon: Music,
-    color: "bg-green-500",
-    category: "Entretenimiento",
-  },
-  prime: {
-    keywords: ["amazon prime", "prime video", "amzn", "DLO*PRIMEVIDEO"],
-    name: "Prime Video",
-    icon: Play,
-    color: "bg-blue-600",
-    category: "Entretenimiento",
-  },
-  disney: {
-    keywords: ["disney", "disney+", "disneyplus"],
-    name: "Disney+",
-    icon: Video,
-    color: "bg-blue-700",
-    category: "Entretenimiento",
-  },
-  youtube: {
-    keywords: ["youtube premium", "youtube music", "ytb"],
-    name: "YouTube Premium",
-    icon: Play,
-    color: "bg-red-600",
-    category: "Entretenimiento",
-  },
-  gaming: {
-    keywords: ["xbox", "playstation", "steam", "epic games", "nintendo"],
-    name: "Gaming",
-    icon: Gamepad2,
-    color: "bg-purple-600",
-    category: "Gaming",
-  },
-  utilities: {
-    keywords: ["internet", "wifi", "telefonica", "claro", "movistar"],
-    name: "Internet/Phone",
-    icon: Wifi,
-    color: "bg-orange-500",
-    category: "Servicios",
-  },
-  shopping: {
-    keywords: ["mercadolibre", "amazon", "subscription"],
-    name: "Shopping",
-    icon: ShoppingBag,
-    color: "bg-yellow-600",
-    category: "Compras",
-  },
-  gym: {
-    keywords: ["gym", "fitness", "gympass"],
-    name: "Gym",
-    icon: Dumbbell,
-    color: "bg-green-500",
-    category: "Salud",
-  },
-  "max": {
-    keywords: ["max", "HBO", "HBO Max", "HBO Go", "hbo", "hbo max"],
-    name: "HBO Max",
-    icon: Clapperboard,
-    color: "bg-purple-600",
-    category: "Entretenimiento",
-  },
-}
-
-interface SubscriptionData {
-  id: string
-  name: string
-  icon: any
-  color: string
-  monthlyAmount: number
-  currency: string
-  lastPayment: string
-  nextPayment: string
-  category: string
-  transactions: TransactionOutput[]
-}
-
-function identifySubscriptions(transactions: TransactionOutput[]): SubscriptionData[] {
-  const subscriptionMap = new Map<string, TransactionOutput[]>()
-
-  // Group transactions by potential subscription services
-  transactions.forEach((transaction) => {
-    const description = transaction.description.toLowerCase()
-
-    // Check against known patterns
-    for (const [key, pattern] of Object.entries(subscriptionPatterns)) {
-      if (pattern.keywords.some((keyword) => description.includes(keyword))) {
-        if (!subscriptionMap.has(key)) {
-          subscriptionMap.set(key, [])
-        }
-        subscriptionMap.get(key)!.push(transaction)
-        return
-      }
-    }
-
-    // Check for recurring patterns (same description, similar amounts)
-    const existingKey = Array.from(subscriptionMap.keys()).find((k) => {
-      const existing = subscriptionMap.get(k)!
-      return existing.some(
-        (t) =>
-          t.description.toLowerCase() === description &&
-          Math.abs(Number.parseFloat(t.amount) - Number.parseFloat(transaction.amount)) < 100,
-      )
-    })
-
-    if (existingKey) {
-      subscriptionMap.get(existingKey)!.push(transaction)
-    } else {
-      // Create new potential subscription
-      subscriptionMap.set(description, [transaction])
-    }
-  })
-
-  // Filter and format subscriptions (only those with multiple transactions)
-  const subscriptions: SubscriptionData[] = []
-
-  subscriptionMap.forEach((transactions, key) => {
-    if (transactions.length >= 1) {
-      // At least 2 transactions to be considered recurring
-      const pattern = subscriptionPatterns[key as keyof typeof subscriptionPatterns]
-      const sortedTransactions = transactions.sort((a, b) => new Date(b.date).getTime() - new Date(a.date).getTime())
-      const latestTransaction = sortedTransactions[0]
-      if (!latestTransaction) return
-      const avgAmount =
-        transactions.reduce((sum, t) => sum + Math.abs(Number.parseFloat(t.amount)), 0) / transactions.length
-
-      // Calculate next payment (estimate based on frequency)
-      const dates = transactions.map((t) => new Date(t.date)).sort((a, b) => b.getTime() - a.getTime())
-      if (!dates[0]) return;
-
-      const daysBetween =
-        dates.length > 1 && dates[0] && dates[1]
-          ? Math.round((dates[0].getTime() - dates[1].getTime()) / (1000 * 60 * 60 * 24))
-          : 30
-
-      const nextPayment = new Date(dates[0]!)
-      nextPayment.setDate(nextPayment.getDate() + Math.max(daysBetween, 30))
-
-      subscriptions.push({
-        id: key,
-        name: pattern?.name || latestTransaction.description,
-        icon: pattern?.icon || Zap,
-        color: pattern?.color || "bg-gray-500",
-        monthlyAmount: avgAmount,
-        currency: latestTransaction.currency,
-        lastPayment: latestTransaction.date,
-        nextPayment: (nextPayment.toISOString().split("T")[0] as string),
-        category: pattern?.category || latestTransaction.category,
-        transactions: sortedTransactions,
-      })
-    }
-  })
-
-  // if category is "Supermercado" remove it
-  const filteredSubscriptions = subscriptions.filter((subscription) => subscription.category !== "Supermercado")
-
-  return filteredSubscriptions.sort((a, b) => b.monthlyAmount - a.monthlyAmount)
-}
+import { identifySubscriptions } from "~/lib/utils"
 
 export function SubscriptionWidget({ transactions }: { transactions: TransactionOutput[] }) {
   const [currentIndex, setCurrentIndex] = useState(0)
@@ -199,7 +21,7 @@ export function SubscriptionWidget({ transactions }: { transactions: Transaction
   }, [transactions])
 
   const totalMonthlySpend = subscriptions.reduce((sum, sub) => {
-    return sum + (sub.currency === "USD" ? sub.monthlyAmount * 1000 : sub.monthlyAmount) // Rough conversion for display
+    return sum + (sub.currency === "USD" ? sub.monthlyAmount * 1000 : sub.monthlyAmount)
   }, 0)
 
   if (subscriptions.length === 0) {
