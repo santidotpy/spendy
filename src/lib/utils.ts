@@ -16,6 +16,8 @@ import {
   Sparkles,
   CirclePlay,
 } from "lucide-react"
+// import pdf from "pdf-parse"
+
 
 import type { TransactionOutput } from "~/server/api/types"
 
@@ -105,6 +107,7 @@ export interface SubscriptionData {
   transactions: TransactionOutput[]
 }
 
+// only include subscriptions that are in subscriptionPatterns
 export function identifySubscriptions(transactions: TransactionOutput[]): SubscriptionData[] {
   const subscriptionMap = new Map<string, TransactionOutput[]>()
 
@@ -118,28 +121,16 @@ export function identifySubscriptions(transactions: TransactionOutput[]): Subscr
         return
       }
     }
-
-    const existingKey = Array.from(subscriptionMap.keys()).find((k) => {
-      const existing = subscriptionMap.get(k)!
-      return existing.some(
-        (t) =>
-          t.description.toLowerCase() === description &&
-          Math.abs(Number.parseFloat(t.amount) - Number.parseFloat(transaction.amount)) < 100, // 100 pesos de diferencia, podria ser un poco mas
-      )
-    })
-
-    if (existingKey) {
-      subscriptionMap.get(existingKey)!.push(transaction)
-    } else {
-      subscriptionMap.set(description, [transaction])
-    }
+    // Do not add unknown subscriptions
   })
 
   let subscriptions: SubscriptionData[] = []
 
   subscriptionMap.forEach((transactions, key) => {
+    // Only process if key exists in subscriptionPatterns
+    const pattern = subscriptionPatterns[key as keyof typeof subscriptionPatterns]
+    if (!pattern) return
     if (transactions.length >= 1) {
-      const pattern = subscriptionPatterns[key as keyof typeof subscriptionPatterns]
       const sortedTransactions = transactions.sort((a, b) => new Date(b.date).getTime() - new Date(a.date).getTime())
       const latestTransaction = sortedTransactions[0]
       if (!latestTransaction) return
@@ -160,20 +151,20 @@ export function identifySubscriptions(transactions: TransactionOutput[]): Subscr
 
       subscriptions.push({
         id: key,
-        name: pattern?.name || latestTransaction.description,
-        icon: pattern?.icon || Zap,
-        color: pattern?.color || "bg-gray-500",
+        name: pattern.name,
+        icon: pattern.icon,
+        color: pattern.color,
         monthlyAmount: avgAmount,
         currency: latestTransaction.currency,
         lastPayment: latestTransaction.date,
         nextPayment: nextPayment.toISOString().split("T")[0] || "",
-        category: pattern?.category || latestTransaction.category,
+        category: pattern.category,
         transactions: sortedTransactions,
       })
     }
   })
-  //remove supermercado and compras from subscriptions
-  return subscriptions.filter((s) => s.category !== "Supermercado" && s.category !== "Compras").sort((a, b) => b.monthlyAmount - a.monthlyAmount)
+  //remove supermercado, compras, comida from subscriptions
+  return subscriptions.filter((s) => s.category !== "Supermercado" && s.category !== "Compras" && s.category !== "Comida").sort((a, b) => b.monthlyAmount - a.monthlyAmount)
 }
 
 
@@ -261,3 +252,8 @@ export const categoryColors: Record<string, string> = {
   "Otros": "#a855f7",
   "Musica": "#1ED760",
 }
+
+// export async function extractTextFromPDF(buffer: Buffer): Promise<string> {
+//   const data = await pdf(buffer)
+//   return data.text
+// }

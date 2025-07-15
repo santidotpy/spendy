@@ -4,12 +4,7 @@ import type { CalendarDay } from "../types/subscription"
 import { categoryIcons, categoryColors, cn } from "~/lib/utils"
 import { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from "~/components/ui/tooltip"
 import { formatCurrency, getTotalForDay } from "~/utils/calendar"
-import type { TransactionOutput } from "~/server/api/types"
 import { HelpCircle } from "lucide-react"
-
-
-
-
 
 interface CalendarDayProps {
   day: CalendarDay
@@ -19,6 +14,7 @@ interface CalendarDayProps {
 export function CalendarDayComponent({ day, onDayClick }: CalendarDayProps) {
   const hasTransactions = day.transactions.length > 0
   const dayTotal = getTotalForDay(day.transactions)
+  const transactionCount = day.transactions.length
 
   return (
     <TooltipProvider>
@@ -40,37 +36,45 @@ export function CalendarDayComponent({ day, onDayClick }: CalendarDayProps) {
             <span className={cn("mb-2", day.isToday && "font-bold")}>{day.date.getDate()}</span>
 
             {hasTransactions && (
-              <div className="flex flex-wrap gap-1 justify-center max-w-full">
-                {day.transactions.slice(0, 4).map((transaction) => {
-                  const Icon = categoryIcons[transaction.category] ?? HelpCircle
-                  const bgColor = categoryColors[transaction.category] ?? "#64748b"
-
-                  return (
-                    <div
-                      key={transaction.id}
-                      className="w-6 h-6 rounded-lg flex items-center justify-center shadow-sm text-white"
-                      style={{ backgroundColor: bgColor }}
-                    >
-                      <Icon className="w-4 h-4" />
-                    </div>
-                  )
-                })}
-                {day.transactions.length > 4 && (
-                  <div className="w-6 h-6 rounded-lg bg-neutral-700 flex items-center justify-center text-xs text-white font-medium">
-                    +{day.transactions.length - 4}
+              <>
+                {/* Mobile: Show transaction count */}
+                <div className="flex flex-col items-center sm:hidden">
+                  <div className="w-6 h-6 rounded-full bg-blue-600 flex items-center justify-center text-xs text-white font-medium">
+                    {transactionCount > 5 ? "+5" : transactionCount}
                   </div>
-                )}
-              </div>
+                </div>
+
+                {/* Desktop: Show individual icons */}
+                <div className="hidden sm:flex flex-wrap gap-1 justify-center max-w-full">
+                  {day.transactions.slice(0, 4).map((transaction) => {
+                    const Icon = categoryIcons[transaction.category] ?? HelpCircle
+                    const bgColor = categoryColors[transaction.category] ?? "#64748b"
+                    return (
+                      <div
+                        key={transaction.id}
+                        className="w-6 h-6 rounded-lg flex items-center justify-center shadow-sm text-white"
+                        style={{ backgroundColor: bgColor }}
+                      >
+                        <Icon className="w-4 h-4" />
+                      </div>
+                    )
+                  })}
+                  {day.transactions.length > 4 && (
+                    <div className="w-6 h-6 rounded-lg bg-neutral-700 flex items-center justify-center text-xs text-white font-medium">
+                      +{day.transactions.length - 4}
+                    </div>
+                  )}
+                </div>
+              </>
             )}
 
             {hasTransactions && day.transactions.length <= 2 && (
-              <div className="mt-1">
+              <div className="mt-1 hidden sm:block">
                 <span className="text-xs text-gray-400 font-medium">{formatCurrency(dayTotal, "USD")}</span>
               </div>
             )}
           </button>
         </TooltipTrigger>
-
         {hasTransactions && (
           <TooltipContent side="top" className="max-w-xs bg-neutral-800 border-neutral-700">
             <div className="space-y-2">
@@ -80,7 +84,6 @@ export function CalendarDayComponent({ day, onDayClick }: CalendarDayProps) {
               {day.transactions.map((transaction) => {
                 const Icon = categoryIcons[transaction.category] ?? HelpCircle
                 const bgColor = categoryColors[transaction.category] ?? "#64748b"
-
                 return (
                   <div key={transaction.id} className="flex items-center justify-between gap-3">
                     <div className="flex items-center gap-2">
